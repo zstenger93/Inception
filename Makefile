@@ -1,5 +1,9 @@
+SHELL := /bin/bash
+
 all:
 	@echo "docker-compose Inception"
+	chmod +x srcs/requirements/tools/initialize.sh
+	./srcs/requirements/tools/initialize.sh
 	docker compose -f ./scrs/docker-compose.yml up -d --build
 
 down:

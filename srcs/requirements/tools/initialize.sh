@@ -8,7 +8,7 @@ DB_ROOT=dbpass
 DB_USER=wpuser
 DB_PASS=wppass"
 
-echo "$ENV_CONTENT" > ../.env
+echo "$ENV_CONTENT" > srcs/.env
 
 if [ ! -d "/home/${USER}/data" ]; then
 		mkdir ~/data
