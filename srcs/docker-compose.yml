@@ -1,0 +1,43 @@
+version: '3'
+
+# Services and their settings we are going to use
+services:
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    restart: always
+    networks:
+      - network
+
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - network
+
+  wordpress:
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - network
+
+# Volume locations and settings
+volumes:
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local
+
+networks:
+  network:
+    driver: bridge
