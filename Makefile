@@ -1,10 +1,13 @@
 all:
+	@echo "docker-compose Inception"
 	docker compose -f ./scrs/docker-compose.yml up -d --build
 
 down:
+	@echo "Taking inception down"
 	docker compose -f ./scrs/docker-compose.yml down
 
 re:
+	@echo "Rebuilding inception"
 	docker compose -f scrs/docker-compose.yml up -d --build
 
 clean:
