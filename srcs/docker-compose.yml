@@ -4,27 +4,46 @@ version: '3'
 services:
   nginx:
     container_name: nginx
-    build: ./requirements/nginx
+    build:
+      context: ./
+      dockerfile: requirements/nginx/Dockerfile
+    ports:
+      - 443:443
+    volumes:
+      - wordpress_data:/var/www/html
     restart: always
     networks:
       - network
 
   mariadb:
     container_name: mariadb
-    build: ./requirements/mariadb
+    build:
+      context: ./
+      dockerfile: requirements/mariadb/Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        DB_ROOT: ${DB_ROOT}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - network
     restart: always
     env_file:
       - .env
-    networks:
-      - network
 
   wordpress:
     container_name: wordpress
     depends_on:
       - mariadb
     build:
-      context: ./requirements/wordpress
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: requirements/wordpress/Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
     restart: always
     env_file:
       - .env
