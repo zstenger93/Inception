@@ -9,11 +9,13 @@ RUN apt-get update && apt-get install \
 	php-pdo \
 	php-gd php-cli \
 	php-mbstring \
+	bash \
 	wget \
-	curl \
-	bash
+	curl
 
 EXPOSE 6666
 
-# ignore daemon and launch in the foreground
+ENTRYPOINT ["/usr/local/bin/create_wordpress.sh"]
+
+# Ignore daemon and launch in the foreground
 CMD ["/usr/sbin/php-fpm7.3", "-F"]

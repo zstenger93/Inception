@@ -10,5 +10,5 @@ EXPOSE 3333
 
 ENTRYPOINT [ "/usr/local/bin/mariadb.sh" ]
 
-# launch and enable the listening globally for the database
+# Launch and enable the listening globally for the database
 CMD ["mysqld", "--bind-address=0.0.0.0"]

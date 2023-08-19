@@ -5,7 +5,7 @@ RUN apt-get update && apt-get isntall -y \
 	nginx \
 	openssl
 
-# only port allowed by the subject pdf
+# Only port allowed by the subject pdf
 EXPOSE 443
 
 # alunch
