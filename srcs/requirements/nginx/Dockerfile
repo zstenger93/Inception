@@ -5,6 +5,15 @@ RUN apt-get update && apt-get isntall -y \
 	nginx \
 	openssl
 
+RUN mkdir /etc/nginx/ssl && openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
+       -out /etc/nginx/ssl/zstenger.crt \
+       -keyout /etc/nginx/ssl/zstenger.key
+
+COPY ./conf/nginx.conf /etc/nginx/conf.d
+
+# nginx config
+RUN mkdir -p /run/nginx
+
 # Only port allowed by the subject pdf
 EXPOSE 443
 

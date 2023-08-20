@@ -43,8 +43,8 @@ services:
       context: ./
       dockerfile: requirements/wordpress/Dockerfile
       args:
-        DB_NAME: ${DB_NAME}
-        DB_USER: ${DB_USER}
+        DB_NAME: ${DB_NAME} # build time arguments are making dockerfiles
+        DB_USER: ${DB_USER} # more dunamic and flexible
         DB_PASS: ${DB_PASS}
     restart: always
     env_file:
