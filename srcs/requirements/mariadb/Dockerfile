@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:bullseye
 
 # Installing requirements
 RUN apt-get update && apt-get install -y \
