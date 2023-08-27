@@ -1,4 +1,4 @@
-DC_FILE = docker-compose -f ./srcs/docker-compose.yml
+DOCKER-COMPOSE_FILE = docker-compose -f ./srcs/docker-compose.yml
 
 ENV_FILE = srcs/.env
 
@@ -9,15 +9,15 @@ build:
 	@echo "docker-compose Inception"
 	chmod +x srcs/requirements/tools/initialize.sh
 	./srcs/requirements/tools/initialize.sh
-	$(DC_FILE) build
+	$(DOCKER-COMPOSE_FILE) build
 
 run:
 	@echo "Starting Inception"
-	$(DC_FILE) up -d
+	$(DOCKER-COMPOSE_FILE) up -d
 
 down:
 	@echo "Taking inception down"
-	$(DC_FILE) down
+	$(DOCKER-COMPOSE_FILE) down
 
 re:
 	@echo "Rebuilding inception"
