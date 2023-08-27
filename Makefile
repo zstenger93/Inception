@@ -1,24 +1,35 @@
-SHELL := /bin/bash
+DC_FILE = docker-compose -f ./srcs/docker-compose.yml
 
-all:
+ENV_FILE = srcs/.env
+
+include $(ENV_FILE)
+export
+
+build:
 	@echo "docker-compose Inception"
 	chmod +x srcs/requirements/tools/initialize.sh
 	./srcs/requirements/tools/initialize.sh
-	docker compose -f ./scrs/docker-compose.yml up -d --build
+	$(DC_FILE) build
+
+run:
+	@echo "Starting Inception"
+	$(DC_FILE) up -d
 
 down:
 	@echo "Taking inception down"
-	docker compose -f ./scrs/docker-compose.yml down
+	$(DC_FILE) down
 
 re:
 	@echo "Rebuilding inception"
-	docker compose -f scrs/docker-compose.yml up -d --build
+	make down
+	make build
+	make run
 
 clean:
-	docker stop $$(docker ps -qa);\
-	docker rm $$(docker ps -qa);\
+	docker stop $$(docker ps -aq);\
+	docker rm $$(docker ps -aq);\
 	docker rmi -f $$(docker images -qa);\
 	docker volume rm $$(docker volume ls -q);\
 	docker network rm $$(docker network ls -q);\
 
-.PHONY: all re down clean
+.PHONY: build run down re clean

@@ -3,10 +3,16 @@ FROM debian:bullseye
 # Installing requirements
 RUN apt-get update && apt-get install -y \
 	mariadb-server \
-	mariadb-client \
-	vim
+	mariadb-client && \
+	mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 
-EXPOSE 3333
+EXPOSE 3306
+
+ENV MYSQL_SOCKET=/var/run/mysqld/mysqld.sock
+
+COPY requirements/mariadb/conf/mariadb.sh /mariadb.sh
+
+RUN chmod +x mariadb.sh && bash mariadb.sh
 
 ENTRYPOINT [ "/usr/local/bin/mariadb.sh" ]
 

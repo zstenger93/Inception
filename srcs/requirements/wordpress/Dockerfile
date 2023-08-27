@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install \
 	wget \
 	curl
 
-EXPOSE 6666
+WORKDIR /var/www/html
+
+EXPOSE 9000
 
 ENTRYPOINT ["/usr/local/bin/create_wordpress.sh"]
 
