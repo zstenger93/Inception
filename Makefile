@@ -5,6 +5,8 @@ ENV_FILE = srcs/.env
 include $(ENV_FILE)
 export
 
+# make makefile great again
+
 build:
 	@echo "docker-compose Inception"
 	chmod +x srcs/requirements/tools/initialize.sh
