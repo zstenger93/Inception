@@ -7,6 +7,10 @@ export
 
 # make makefile great again
 
+creationcatalyst:
+	chmod +x CreationCatalyst.sh
+	./CreationCatalyst.sh
+
 build:
 	@echo "docker-compose Inception"
 	chmod +x srcs/requirements/tools/initialize.sh
