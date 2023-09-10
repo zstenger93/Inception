@@ -35,10 +35,10 @@ services:
       context: ./
       dockerfile: requirements/mariadb/Dockerfile
       args:
-        DB_NAME: ${DB_NAME}
-        DB_USER: ${DB_USER}
-        DB_PASS: ${DB_PASS}
-        DB_ROOT: ${DB_ROOT}
+        DB_NAME: \${DB_NAME}
+        DB_USER: \${DB_USER}
+        DB_PASS: \${DB_PASS}
+        DB_ROOT: \${DB_ROOT}
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
@@ -56,9 +56,9 @@ services:
       context: ./
       dockerfile: requirements/wordpress/Dockerfile
       args:
-        DB_NAME: ${DB_NAME} # build time arguments are making dockerfiles
-        DB_USER: ${DB_USER} # more dunamic and flexible
-        DB_PASS: ${DB_PASS}
+        DB_NAME: \${DB_NAME} # build time arguments are making dockerfiles
+        DB_USER: \${DB_USER} # more dunamic and flexible
+        DB_PASS: \${DB_PASS}
     restart: always
     env_file:
       - .env
