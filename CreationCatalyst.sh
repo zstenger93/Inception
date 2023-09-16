@@ -1,11 +1,17 @@
 echo "Creating folders ..."
-mkdir -p src/requirements/mariadb/conf
-mkdir -p src/requirements/mariadb/tools
-mkdir -p src/requirements/nginx/conf
-mkdir -p src/requirements/nginx/tools
-mkdir -p src/requirements/tools
-mkdir -p src/requirements/wordpress/conf
-mkdir -p src/requirements/wordpress/tools
+mkdir -p src/requirements/mariadb/conf \
+	src/requirements/mariadb/tools \
+	src/requirements/nginx/conf \
+	src/requirements/nginx/tools \
+	src/requirements/tools \
+	src/requirements/wordpress/conf \
+	src/requirements/wordpress/tools
+
+if [ ! -d "/home/${USER}/data" ]; then
+		mkdir ~/data
+        mkdir ~/data/mariadb
+        mkdir ~/data/wordpress
+fi
 
 echo "\033[1;32mDone\033[0;39m"
 echo "Creating docker-compose ..."
