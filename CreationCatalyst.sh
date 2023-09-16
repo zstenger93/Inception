@@ -16,6 +16,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 		srcs/requirements/tools \
 		srcs/requirements/wordpress/conf \
 		srcs/requirements/wordpress/tools
+	touch srcs/requirements/tools/tool.sh
 
 	if [ ! -d "/home/${USER}/data" ]; then
 			mkdir ~/data
