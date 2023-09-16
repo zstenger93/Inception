@@ -39,6 +39,6 @@ clean:
 
 fclean:
 	rm -rf srcs/
-	rm template.sh .env
+	rm template.sh
 
 .PHONY: build run down re clean stop creationcatalyst

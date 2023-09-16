@@ -65,11 +65,6 @@ services:
         build:
             context: ./
             dockerfile: requirements/mariadb/Dockerfile
-        args:
-            DB_NAME: \${DATABASE_NAME}
-            DB_USER: \${DATABASE_USER}
-            DB_PASS: \${DATABASE_USER_PASS}
-            DB_ROOT: \${DATABASE_ROOT}
         volumes:
             - mariadb_data:/var/lib/mysql
         networks:
@@ -86,10 +81,6 @@ services:
         build:
             context: ./
             dockerfile: requirements/wordpress/Dockerfile
-        args:
-            WP_ADMIN_NAME: \${WP_ADMIN} # build time arguments are making dockerfiles
-            WP_ADMIN_PW: \${WP_ADMIN_PW} # more dunamic and flexible
-            WP_ADMIN_EMAIL: \${WP_ADMIN_EMAIL}
         volumes:
             - wordpress_data:/var/www/html
         restart: unless-stopped
@@ -122,24 +113,14 @@ networks:
 
     sleep 1
     # create the dockerfile for mariadb
-    MARIADB_DOCKERFILE="FROM debian:buster
-
-    RUN apt-get update && apt-get upgrade -y && apt-get install mariadb-server mariadb-client procps -y
-
-    RUN sed -ie 's/bind-address            = 127.0.0.1/bind-address = 0.0.0.0/g' /etc/mysql/mariadb.conf.d/50-server.cnf
-
-    RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
-
-    COPY ./docker-entrypoint.sh /usr/local/bin
-    RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-    EXPOSE 3306
-
-    #USER mysql
-    HEALTHCHECK --interval=10s --timeout=3s CMD mysql -e \"SELECT 1\" || exit 1
-
-    ENTRYPOINT [\"docker-entrypoint.sh\"]
-    CMD [\"mysqld\"]"
+    MARIADB_DOCKERFILE="FROM alpine:3.18
+RUN apk add mysql 
+RUN apk add mysql-client
+RUN mkdir -p /run/mysqld
+RUN mkdir -p /var/lib/mysql
+RUN mariadb-install-db --user=root --datadir=/var/lib/mysql --skip-test-db
+EXPOSE 3306
+ENTRYPOINT [\"sh\", \"tools/create_database.sh\"]"
 
     echo "$MARIADB_DOCKERFILE" > srcs/requirements/mariadb/Dockerfile
 
@@ -184,26 +165,10 @@ exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/pr
 
     sleep 1
     # create the dockerfile for nginx
-    NGINX_DOCKERFILE="FROM debian:buster
-
-    RUN apt-get update && apt-get upgrade \
-        && apt-get install -y nginx openssl
-
-    ARG NGINX_DOMAIN
-
-    RUN mkdir -p \"/etc/cert/\$NGINX_DOMAIN\" && \
-        mkdir -p /var/run/nginx && \
-        chown -R www-data:www-data /var/run/nginx
-
-    RUN openssl req -x509 -newkey rsa:4096 -keyout \"/etc/cert/\$NGINX_DOMAIN/key.pem\" -out \"/etc/cert/\$NGINX_DOMAIN/cert.pem\" -sha256 -days 365 -nodes -subj \"/CN=\$NGINX_DOMAIN\"
-
-    COPY ./nginx.conf /etc/nginx/nginx.conf
-    COPY ./wordpress.conf \"/etc/nginx/conf.d/\$NGINX_DOMAIN.conf\"
-    COPY ./adminer.conf \"/etc/nginx/conf.d/adminer.\$NGINX_DOMAIN.conf\"
-
-    RUN sed -i \"s/\$NGINX_DOMAIN/\$NGINX_DOMAIN/g\" /etc/nginx/conf.d/*
-
-    CMD [\"nginx\", \"-g\", \"daemon off;\"]"
+    NGINX_DOCKERFILE="FROM alpine:3.18
+RUN apk add nginx
+RUN apk add openssl
+ENTRYPOINT [\"sh\", \"tools/setup_nginx.sh\"]"
 
     echo "$NGINX_DOCKERFILE" > srcs/requirements/nginx/Dockerfile
 
@@ -258,30 +223,28 @@ exec nginx -g \"daemon off;\""
     sleep 1
     # create the dockerfile for wordpress
     WORDPRESS_DOCKERFILE="FROM alpine:3.18
-RUN apk add --no-cache php \
-    && add --no-cache php-fpm \
-    && add --no-cache php-mysqli \
-    && add --no-cache mysql-client \
-    && add --no-cache php-phar \
-    && add --no-cache php-cgi \
-    && add --no-cache php-fileinfo \
-    && add --no-cache php-json \
-    && add --no-cache php-iconv \
-    && add --no-cache php-curl \
-    && add --no-cache php-dom \
-    && add --no-cache php-mbstring \
-    && add --no-cache php-openssl \
-    && add --no-cache php-xml \
-    && add --no-cache php-tokenizer \
-    && add --no-cache php-session \
-    && add --no-cache php-exif \
-    && add --no-cache curl \
-    && add --no-cache tar 
+RUN apk add --no-cache php \\
+    --no-cache php-fpm \\
+    --no-cache php-mysqli \\
+    --no-cache mysql-client \\
+    --no-cache php-phar \\
+    --no-cache php-cgi \\
+    --no-cache php-fileinfo \\
+    --no-cache php-json \\
+    --no-cache php-iconv \\
+    --no-cache php-curl \\
+    --no-cache php-dom \\
+    --no-cache php-mbstring \\
+    --no-cache php-openssl \\
+    --no-cache php-xml \\
+    --no-cache php-tokenizer \\
+    --no-cache php-session \\
+    --no-cache php-exif \\
+    --no-cache curl \\
+    --no-cache tar 
 WORKDIR /var/www/html
 EXPOSE 9000
-COPY tools/wp_setup.sh /wp_setup.sh
-RUN chmod +x /wordpress_setup.sh
-ENTRYPOINT [\"/wordpress_setup.sh\"]"
+ENTRYPOINT [\"tools/wordpress_setup.sh\"]"
 
     echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
 
@@ -470,6 +433,7 @@ php-fpm81 -F"
     sleep 1
     echo -e "\033[1;32mDone\033[0;39m"
     sleep 1
+    mv .env srcs/
     echo -e "\033[1;33mCreation has been finished, ready to go in sleep\033[0;39m"
 else
     echo -e "\033[1;32mYou have made the right choice, padavan.\033[0;39m"

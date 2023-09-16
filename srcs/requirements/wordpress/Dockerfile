@@ -1,7 +1,23 @@
 FROM alpine:3.18
-RUN apk add --no-cache php     && add --no-cache php-fpm     && add --no-cache php-mysqli     && add --no-cache mysql-client     && add --no-cache php-phar     && add --no-cache php-cgi     && add --no-cache php-fileinfo     && add --no-cache php-json     && add --no-cache php-iconv     && add --no-cache php-curl     && add --no-cache php-dom     && add --no-cache php-mbstring     && add --no-cache php-openssl     && add --no-cache php-xml     && add --no-cache php-tokenizer     && add --no-cache php-session     && add --no-cache php-exif     && add --no-cache curl     && add --no-cache tar 
+RUN apk add --no-cache php \
+    --no-cache php-fpm \
+    --no-cache php-mysqli \
+    --no-cache mysql-client \
+    --no-cache php-phar \
+    --no-cache php-cgi \
+    --no-cache php-fileinfo \
+    --no-cache php-json \
+    --no-cache php-iconv \
+    --no-cache php-curl \
+    --no-cache php-dom \
+    --no-cache php-mbstring \
+    --no-cache php-openssl \
+    --no-cache php-xml \
+    --no-cache php-tokenizer \
+    --no-cache php-session \
+    --no-cache php-exif \
+    --no-cache curl \
+    --no-cache tar 
 WORKDIR /var/www/html
 EXPOSE 9000
-COPY tools/wp_setup.sh /wp_setup.sh
-RUN chmod +x /wordpress_setup.sh
-ENTRYPOINT ["/wordpress_setup.sh"]
+ENTRYPOINT ["tools/wordpress_setup.sh"]
