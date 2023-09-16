@@ -5,6 +5,8 @@ version: '3'
 services:
     nginx:
         container_name: nginx
+        env_file:
+            - .env
         build:
             context: ./
             dockerfile: requirements/nginx/Dockerfile
@@ -15,28 +17,32 @@ services:
         restart: unless-stopped
         networks:
             - inception
+        depends_on:
+            - wordpress
 
     mariadb:
         container_name: mariadb
+        env_file:
+            - .env
         build:
             context: ./
             dockerfile: requirements/mariadb/Dockerfile
         args:
-            DATABASE_NAME: ${DB_NAME}
-            DATABASE_USER: ${DB_USER}
-            DATABASE_PASS: ${DB_PASS}
-            DATABASE_ROOT: ${DB_ROOT}
+            DB_NAME: ${DATABASE_NAME}
+            DB_USER: ${DATABASE_USER}
+            DB_PASS: ${DATABASE_USER_PASS}
+            DB_ROOT: ${DATABASE_ROOT}
         volumes:
             - mariadb_data:/var/lib/mysql
         networks:
             - inception
         restart: unless-stopped
-        env_file:
-            - .env
 
-    # Has a dependency of database
+    # Has a dependency of database obviously
     wordpress:
         container_name: wordpress
+        env_file:
+            - .env
         depends_on:
             - mariadb
         build:
@@ -44,11 +50,11 @@ services:
             dockerfile: requirements/wordpress/Dockerfile
         args:
             WP_ADMIN_NAME: ${WP_ADMIN} # build time arguments are making dockerfiles
-            DB_ADMIN_PW: ${WP_ADMIN_PW} # more dunamic and flexible
-            DB_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+            WP_ADMIN_PW: ${WP_ADMIN_PW} # more dunamic and flexible
+            WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+        volumes:
+            - wordpress_data:/var/www/html
         restart: unless-stopped
-        env_file:
-            - .env
         networks:
             - inception
 

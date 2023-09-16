@@ -9,6 +9,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
     echo "Continuing with the script..."
     sleep 1
     echo "Creating folders ..."
+    sleep 1
     # creating the requested project folder structure by the subject in the pdf
     mkdir -p srcs/requirements/mariadb/conf \
         srcs/requirements/mariadb/tools \
@@ -20,15 +21,15 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
     touch srcs/requirements/tools/tool.sh
 
     # get the MacOs version to get to know if we can qualify for the darwin award
-    system=$(uname -s)
-    if [ "$system" != "Darwin" ]; then
-        # creates some basic folders if they doesn't exist
-        if [ ! -d "/home/${USER}/data" ]; then
-                mkdir ~/data
-                mkdir ~/data/mariadb
-                mkdir ~/data/wordpress
-        fi
-    fi
+    # system=$(uname -s)
+    # if [ "$system" != "Darwin" ]; then
+    #     # creates some basic folders if they doesn't exist
+    #     if [ ! -d "/home/${USER}/data" ]; then
+    #             mkdir ~/data
+    #             mkdir ~/data/mariadb
+    #             mkdir ~/data/wordpress
+    #     fi
+    # fi
 
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating docker-compose ..."
@@ -42,6 +43,8 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 services:
     nginx:
         container_name: nginx
+        env_file:
+            - .env
         build:
             context: ./
             dockerfile: requirements/nginx/Dockerfile
@@ -52,28 +55,32 @@ services:
         restart: unless-stopped
         networks:
             - inception
+        depends_on:
+            - wordpress
 
     mariadb:
         container_name: mariadb
+        env_file:
+            - .env
         build:
             context: ./
             dockerfile: requirements/mariadb/Dockerfile
         args:
-            DATABASE_NAME: \${DB_NAME}
-            DATABASE_USER: \${DB_USER}
-            DATABASE_PASS: \${DB_PASS}
-            DATABASE_ROOT: \${DB_ROOT}
+            DB_NAME: \${DATABASE_NAME}
+            DB_USER: \${DATABASE_USER}
+            DB_PASS: \${DATABASE_USER_PASS}
+            DB_ROOT: \${DATABASE_ROOT}
         volumes:
             - mariadb_data:/var/lib/mysql
         networks:
             - inception
         restart: unless-stopped
-        env_file:
-            - .env
 
-    # Has a dependency of database
+    # Has a dependency of database obviously
     wordpress:
         container_name: wordpress
+        env_file:
+            - .env
         depends_on:
             - mariadb
         build:
@@ -81,11 +88,11 @@ services:
             dockerfile: requirements/wordpress/Dockerfile
         args:
             WP_ADMIN_NAME: \${WP_ADMIN} # build time arguments are making dockerfiles
-            DB_ADMIN_PW: \${WP_ADMIN_PW} # more dunamic and flexible
-            DB_ADMIN_EMAIL: \${WP_ADMIN_EMAIL}
+            WP_ADMIN_PW: \${WP_ADMIN_PW} # more dunamic and flexible
+            WP_ADMIN_EMAIL: \${WP_ADMIN_EMAIL}
+        volumes:
+            - wordpress_data:/var/www/html
         restart: unless-stopped
-        env_file:
-            - .env
         networks:
             - inception
 
@@ -136,7 +143,41 @@ networks:
 
     echo "$MARIADB_DOCKERFILE" > srcs/requirements/mariadb/Dockerfile
 
-    MARIADB_CONF=""
+    echo -e "\033[1;32mDone\033[0;39m"
+    echo -e "Creating config file for database ..."
+    sleep 1
+
+    MARIADB_CONF="#!/bin/sh
+
+[mysql]
+default-character-set=utf8
+[mysqld]
+datadir = /var/lib/mysql
+socket  = /var/run/mysqld/mysqld.sock
+bind-address = 0.0.0.0
+port = 3306"
+
+    echo "$MARIADB_CONF" > srcs/requirements/mariadb/conf/mariadb.conf
+
+    echo -e "\033[1;32mDone\033[0;39m"
+    echo -e "Creating setup file for database ..."
+    sleep 1
+
+    CREATE_DATABASE="#!/bin/sh
+
+cat srcs/requirements/mariadb/conf/mariadb.conf > /usr/local/bin/my.cnf
+
+cat > srcs/requirements/mariadb/database.sql <<EOF
+CREATE DATABASE IF NOT EXISTS \${DB_NAME};
+ALTER USER 'root'@'localhost' IDENTIFIED BY '\${DATABASE_ROOT}';
+CREATE USER IF NOT EXISTS '${DATABASE_USER}' IDENTIFIED BY '${DATABASE_USER_PASS}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DATABASE_USER}';
+FLUSH PRIVILEGES;
+EOF
+
+exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/problem.sql"
+
+    echo "$CREATE_DATABASE" > srcs/requirements/mariadb/tools/create_database.sh
 
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating Dockerfile for nginx ..."
@@ -200,35 +241,88 @@ networks:
     echo "$NGINX_CONF" > srcs/requirements/nginx/conf/nginx.conf
 
     echo -e "\033[1;32mDone\033[0;39m"
+    echo "Creating nginx setup file ..."
+    sleep 1
+
+    SETUP_NGINX=" # create the config and generate key and certificate
+
+cat srcs/requirements/nginx/conf/nginx.conf > /etc/nginx/http.d/default.conf
+openssl req -x509 -newkey rsa:4096 -keyout \${KEY_} -out \${CERT_} -sha256 -days 365 -nodes -subj \"/CN=\"\${DOMAIN_NAME}\"\"
+exec nginx -g \"daemon off;\""
+
+    echo "$SETUP_NGINX" > srcs/requirements/nginx/tools/setup_nginx.sh
+
+    echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating Dockerfile for wordpress ..."
 
     sleep 1
     # create the dockerfile for wordpress
-    WORDPRESS_DOCKERFILE="FROM debian:bullseye
-
-    # Installing requirements
-    RUN apt-get update && apt-get install \\
-        php \\
-        php-cgi \\
-        php-mysql \\
-        php-fpm \\
-        php-pdo \\
-        php-gd php-cli \\
-        php-mbstring \\
-        bash \\
-        wget \\
-        curl
-
-    WORKDIR /var/www/html
-
-    EXPOSE 9000
-
-    ENTRYPOINT [\"/usr/local/bin/create_wordpress.sh\"]
-
-    # Ignore daemon and launch in the foreground
-    CMD [\"/usr/sbin/php-fpm7.3\", \"-F\"]"
+    WORDPRESS_DOCKERFILE="FROM alpine:3.18
+RUN apk add --no-cache php \
+    && add --no-cache php-fpm \
+    && add --no-cache php-mysqli \
+    && add --no-cache mysql-client \
+    && add --no-cache php-phar \
+    && add --no-cache php-cgi \
+    && add --no-cache php-fileinfo \
+    && add --no-cache php-json \
+    && add --no-cache php-iconv \
+    && add --no-cache php-curl \
+    && add --no-cache php-dom \
+    && add --no-cache php-mbstring \
+    && add --no-cache php-openssl \
+    && add --no-cache php-xml \
+    && add --no-cache php-tokenizer \
+    && add --no-cache php-session \
+    && add --no-cache php-exif \
+    && add --no-cache curl \
+    && add --no-cache tar 
+WORKDIR /var/www/html
+EXPOSE 9000
+COPY tools/wp_setup.sh /wp_setup.sh
+RUN chmod +x /wordpress_setup.sh
+ENTRYPOINT [\"/wordpress_setup.sh\"]"
 
     echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
+
+    echo -e "\033[1;32mDone\033[0;39m"
+    echo "Creating config file for wordpress ..."
+    sleep 1
+
+    WORDPRESS_CONFIG="[www]
+user = insane
+group = insane
+listen = 9000
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3"
+
+    echo "$WORDPRESS_CONFIG" > srcs/requirements/wordpress/conf/wordpress.conf
+
+    echo -e "\033[1;32mDone\033[0;39m"
+    echo "Creating setup file for wordpress ..."
+    sleep 1
+
+    WORDPRESS_SETUP="cat srcs/requirements/wordpress/conf/wordpress.conf > /etc/php81/php-fpm.d/www.conf
+if [ ! -f /var/www/html/wp-config.php ]; then
+    curl -LO https://wordpress.org/wordpress-5.7.2.tar.gz
+    tar -xvzf wordpress-5.7.2.tar.gz
+    mv wordpress/* /var/www/html/
+    rmdir wordpress
+    rm wordpress-5.7.2.tar.gz
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    chmod +x wp-cli.phar
+    mv wp-cli.phar /usr/local/bin/wp
+    wp config create --dbname=\${DATABASE_NAME} --dbuser=\${DATABASE_USER} --dbpass=\${DATABASE_USER_PASS} --dbhost=mariadb --path='/var/www/html'
+    wp core install --url=\${WP_DOMAIN} --title=\"Insaneption\" --admin_user=\${WP_ADMIN} --admin_password=\${WP_ADMIN_PW} --admin_email=\${WP_ADMIN_EMAIL} --path='/var/www/html'
+    wp user create \${WP_USER} \${WP_USER_EMAIL} --user_pass=\${WP_USER_PASS}
+fi
+
+php-fpm81 -F"
+
+    echo "$WORDPRESS_SETUP" > srcs/requirements/wordpress/tools/wordpress_setup.sh
 
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating the environment ..."
@@ -282,6 +376,16 @@ networks:
     done
 
     echo \"# wordpress\" >> .env
+    while true; do
+        printf \"\033[1;31mEnter the WordPress domain:\033[0;39m \"
+        read WP_DOMAIN
+        if [ -n \"\$WP_DOMAIN\" ]; then
+            echo \"WP_DOMAIN=\$WP_DOMAIN\" >> .env
+            break
+        else
+            echo \"Input cannot be empty. Please try again.\"
+        fi
+    done
 
     while true; do
         printf \"\033[1;31mEnter the WordPress admin:\033[0;39m \"
@@ -316,13 +420,33 @@ networks:
         fi
     done
 
-    echo \"# nginx\" >> .env
+    while true; do
+        printf \"\033[1;31mEnter the WordPress user:\033[0;39m \"
+        read WP_USER
+        if [ -n \"\$WP_USER\" ]; then
+            echo \"WP_USER=\$WP_USER\" >> .env
+            break
+        else
+            echo \"Input cannot be empty. Please try again.\"
+        fi
+    done
 
     while true; do
-        printf \"\033[1;31mEnter the nginx domain:\033[0;39m \"
-        read NGINX_DOMAIN
-        if [ -n \"\$NGINX_DOMAIN\" ]; then
-            echo \"NGINX_DOMAIN=\$NGINX_DOMAIN\" >> .env
+        printf \"\033[1;31mEnter the WordPress user password:\033[0;39m \"
+        read WP_USER_PASS
+        if [ -n \"\$WP_USER_PASS\" ]; then
+            echo \"WP_USER_PASS=\$WP_USER_PASS\" >> .env
+            break
+        else
+            echo \"Input cannot be empty. Please try again.\"
+        fi
+    done
+
+    while true; do
+        printf \"\033[1;31mEnter the WordPress user email:\033[0;39m \"
+        read WP_USER_EMAIL
+        if [ -n \"\$WP_USER_EMAIL\" ]; then
+            echo \"WP_USER_EMAIL=\$WP_USER_EMAIL\" >> .env
             break
         else
             echo \"Input cannot be empty. Please try again.\"
@@ -330,16 +454,17 @@ networks:
     done
 
     echo \"# API keys\" >> .env
-    "
+    echo \"CERT_=/etc/ssl/certs/zstenger.42.fr.crt\" >> .env
+    echo \"KEY_=/etc/ssl/private/zstenger.42.fr.key\" >> .env"
 
     echo "$ENV_TEMPLATE" > template.sh
 
     echo -e "\033[1;32mDone\033[0;39m"
-    echo "Creating template file for .env"
+    echo "Creating template file for .env ..."
     chmod +x template.sh
     echo -e "\033[1;32mDone\033[0;39m"
     sleep 1
-    echo "Requesting input for the .env file:"
+    echo "Requesting input for the .env file ..."
     # run the template script and get the attributes for the .env file
     bash template.sh
     sleep 1
