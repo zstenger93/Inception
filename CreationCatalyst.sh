@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Prompt the user for input
+# ask the user if wants to go insane with me
 printf "\033[1;31mDo you want to continue and launch Inception which is famous for driving people Insane?\033[0;39m\033[1;32m(y/yes)\033[0;39m "
 read response
 
-# Check if the response is "y" or "yes"
+#based on response execute the script or not
 if [[ "$response" == "y" || "$response" == "yes" ]]; then
     echo "Continuing with the script..."
 	sleep 1
@@ -18,16 +18,19 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 		srcs/requirements/wordpress/tools
 	touch srcs/requirements/tools/tool.sh
 
-	if [ ! -d "/home/${USER}/data" ]; then
-			mkdir ~/data
-			mkdir ~/data/mariadb
-			mkdir ~/data/wordpress
-	fi
+	system=$(uname -s)
+	if [ "$system" != "Darwin" ]; then
+		if [ ! -d "/home/${USER}/data" ]; then
+				mkdir ~/data
+				mkdir ~/data/mariadb
+				mkdir ~/data/wordpress
+		fi
 
 	echo -e "\033[1;32mDone\033[0;39m"
 	echo "Creating docker-compose ..."
 
 	sleep 1
+	# create the docker-compose file
 	DOCKERCOMPOSE="version: '3'
 
 	# Services and their settings we are going to use
@@ -107,6 +110,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	echo "Creating Dockerfile for mariadb ..."
 
 	sleep 1
+	# create the dockerfile for mariadb
 	MARIADB_DOCKERFILE="FROM debian:buster
 
 	RUN apt-get update && apt-get upgrade -y && apt-get install mariadb-server mariadb-client procps -y
@@ -134,6 +138,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	echo "Creating Dockerfile for nginx ..."
 
 	sleep 1
+	# create the dockerfile for nginx
 	NGINX_DOCKERFILE="FROM debian:buster
 
 	RUN apt-get update && apt-get upgrade \
@@ -161,6 +166,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	echo "Creating config file for nginx ..."
 
 	sleep 1
+	# create the config file for nginx
 	NGINX_CONF="server {
 		listen 443 ssl; # server will listen on port 443 
 		listen [::]:443 ssl; # for incoming SSL/TLS encrypted connections
@@ -194,6 +200,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	echo "Creating Dockerfile for wordpress ..."
 
 	sleep 1
+	# create the dockerfile for wordpress
 	WORDPRESS_DOCKERFILE="FROM debian:bullseye
 
 	# Installing requirements
@@ -224,6 +231,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	echo "Creating the environment ..."
 
 	sleep 1
+	# creating the template for the env file
 	ENV_TEMPLATE="
 	echo \"# mariadb\" > .env
 	while true; do
