@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ask the user if wants to go insane with me
-printf "\033[1;31mDo you want to continue and launch Inception which is famous for driving people Insane?\033[0;39m\033[1;32m(y/yes)\033[0;39m "
+printf "\033[1;31mDo you want to continue and create Inception which is famous for driving people Insane?\033[0;39m\033[1;32m(y/yes)\033[0;39m "
 read response
 
 #based on response execute the script or not
@@ -38,71 +38,71 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
     DOCKERCOMPOSE="version: '3'
 
 # Services and their settings we are going to use
-# Alaways restart if there is a problem
+# Restart if there is a problem unless stopped i guess?
 services:
     nginx:
         container_name: nginx
         build:
-        context: ./
-        dockerfile: requirements/nginx/Dockerfile
+            context: ./
+            dockerfile: requirements/nginx/Dockerfile
         ports:
-        - 443:443
+            - 443:443
         volumes:
-        - wordpress_data:/var/www/html
+            - wordpress_data:/var/www/html
         restart: unless-stopped
         networks:
-        - inception
+            - inception
 
     mariadb:
         container_name: mariadb
         build:
-        context: ./
-        dockerfile: requirements/mariadb/Dockerfile
+            context: ./
+            dockerfile: requirements/mariadb/Dockerfile
         args:
             DATABASE_NAME: \${DB_NAME}
             DATABASE_USER: \${DB_USER}
             DATABASE_PASS: \${DB_PASS}
             DATABASE_ROOT: \${DB_ROOT}
         volumes:
-        - mariadb_data:/var/lib/mysql
+            - mariadb_data:/var/lib/mysql
         networks:
-        - inception
+            - inception
         restart: unless-stopped
         env_file:
-        - .env
+            - .env
 
     # Has a dependency of database
     wordpress:
         container_name: wordpress
         depends_on:
-        - mariadb
+            - mariadb
         build:
-        context: ./
-        dockerfile: requirements/wordpress/Dockerfile
+            context: ./
+            dockerfile: requirements/wordpress/Dockerfile
         args:
             WP_ADMIN_NAME: \${WP_ADMIN} # build time arguments are making dockerfiles
             DB_ADMIN_PW: \${WP_ADMIN_PW} # more dunamic and flexible
             DB_ADMIN_EMAIL: \${WP_ADMIN_EMAIL}
         restart: unless-stopped
         env_file:
-        - .env
+            - .env
         networks:
-        - inception
+            - inception
 
 # Volume locations and settings
 volumes:
     mariadb_data:
         driver: local
         driver_opts:
-        type: 'none'
-        o: 'bind'
-        device: /home/zstenger/data/mariadb
+            type: 'none'
+            o: 'bind'
+            device: /home/zstenger/data/mariadb
     wordpress_data:
         driver: local
         driver_opts:
-        type: 'none'
-        o: 'bind'
-        device: /home/zstenger/data/mariadb
+            type: 'none'
+            o: 'bind'
+            device: /home/zstenger/data/mariadb
 
 networks:
     inception:
@@ -239,10 +239,10 @@ networks:
     ENV_TEMPLATE="
     echo \"# mariadb\" > .env
     while true; do
-        printf \"\033[1;31mEnter the database root password:\033[0;39m \"
+        printf \"\033[1;31mEnter the database name:\033[0;39m \"
         read DB_NAME
         if [ -n \"\$DB_NAME\" ]; then
-            echo \"DB_NAME=\$DB_NAME\" >> .env
+            echo \"DATABASE_NAME=\$DB_NAME\" >> .env
             break
         else
             echo \"Input cannot be empty. Please try again.\"
@@ -250,10 +250,10 @@ networks:
     done
 
     while true; do
-        printf \"\033[1;31mEnter the database user:\033[0;39m \"
+        printf \"\033[1;31mEnter the database root password:\033[0;39m \"
         read DB_ROOT
         if [ -n \"\$DB_ROOT\" ]; then
-            echo \"DB_ROOT=\$DB_ROOT\" >> .env
+            echo \"DATABASE_ROOT=\$DB_ROOT\" >> .env
             break
         else
             echo \"Input cannot be empty. Please try again.\"
@@ -261,10 +261,10 @@ networks:
     done
 
     while true; do
-        printf \"\033[1;31mEnter the database:\033[0;39m \"
+        printf \"\033[1;31mEnter the database username:\033[0;39m \"
         read DB_USER
         if [ -n \"\$DB_USER\" ]; then
-            echo \"DB_USER=\$DB_USER\" >> .env
+            echo \"DATABASE_USER=\$DB_USER\" >> .env
             break
         else
             echo \"Input cannot be empty. Please try again.\"
@@ -273,9 +273,9 @@ networks:
 
     while true; do
         printf \"\033[1;31mEnter the database user password:\033[0;39m \"
-        read DB_PASS
-        if [ -n \"\$DB_PASS\" ]; then
-            echo \"DB_PASS=\$DB_PASS\" >> .env
+        read DB_USER_PASS
+        if [ -n \"\$DB_USER_PASS\" ]; then
+            echo \"DATABASE_USER_PASS=\$DB_USER_PASS\" >> .env
             break
         else
             echo \"Input cannot be empty. Please try again.\"
@@ -329,6 +329,8 @@ networks:
             echo \"Input cannot be empty. Please try again.\"
         fi
     done
+
+    echo \"# API keys\" >> .env
     "
 
     echo "$ENV_TEMPLATE" > template.sh

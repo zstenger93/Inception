@@ -1,1 +1,0 @@
-# Script file to setup nginx

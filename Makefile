@@ -14,6 +14,9 @@ run:
 	@echo "Starting Inception"
 	$(DOCKER-COMPOSE_FILE) up -d
 
+stop:
+	@$(DOCKER-COMPOSE_FILE) stop
+
 down:
 	@echo "Taking inception down"
 	$(DOCKER-COMPOSE_FILE) down
@@ -24,6 +27,9 @@ re:
 	make build
 	make run
 
+db:
+	docker exec -it mariadb mysql -u sh
+
 clean:
 	docker stop $$(docker ps -aq);\
 	docker rm $$(docker ps -aq);\
@@ -31,4 +37,8 @@ clean:
 	docker volume rm $$(docker volume ls -q);\
 	docker network rm $$(docker network ls -q);\
 
-.PHONY: build run down re clean creationcatalyst
+fclean:
+	rm -rf srcs/
+	rm template.sh .env
+
+.PHONY: build run down re clean stop creationcatalyst
