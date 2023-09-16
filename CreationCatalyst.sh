@@ -136,9 +136,9 @@ RUN mkdir -p \"/etc/cert/\$NGINX_DOMAIN\" && \
 
 RUN openssl req -x509 -newkey rsa:4096 -keyout \"/etc/cert/\$NGINX_DOMAIN/key.pem\" -out \"/etc/cert/\$NGINX_DOMAIN/cert.pem\" -sha256 -days 365 -nodes -subj \"/CN=\$NGINX_DOMAIN\"
 
-COPY ./nginx.conf /etc/nginx/nginx.conf \
-	&& ./wordpress.conf \"/etc/nginx/conf.d/\$NGINX_DOMAIN.conf\" \
-	&& ./adminer.conf \"/etc/nginx/conf.d/adminer.\$NGINX_DOMAIN.conf\"
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./wordpress.conf \"/etc/nginx/conf.d/\$NGINX_DOMAIN.conf\"
+COPY ./adminer.conf \"/etc/nginx/conf.d/adminer.\$NGINX_DOMAIN.conf\"
 
 RUN sed -i \"s/\$NGINX_DOMAIN/\$NGINX_DOMAIN/g\" /etc/nginx/conf.d/*
 
