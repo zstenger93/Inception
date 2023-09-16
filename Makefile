@@ -13,8 +13,6 @@ creationcatalyst:
 
 build:
 	@echo "docker-compose Inception"
-	chmod +x srcs/requirements/tools/initialize.sh
-	./srcs/requirements/tools/initialize.sh
 	$(DOCKER-COMPOSE_FILE) build
 
 run:

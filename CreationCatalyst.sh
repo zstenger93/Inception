@@ -19,6 +19,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 		srcs/requirements/wordpress/tools
 	touch srcs/requirements/tools/tool.sh
 
+	# get the MacOs version to get to know if we can qualify for the darwin award
 	system=$(uname -s)
 	if [ "$system" != "Darwin" ]; then
 		# creates some basic folders if they doesn't exist
