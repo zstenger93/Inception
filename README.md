@@ -21,19 +21,3 @@ The database
 For the ssl certificate and key
 
 ## wordpress
-
-# Bonus
-
-## redis
-
-For proper chache management
-
-## FTP-server
-
-
-
-## adminer
-
-## simple static website created with
-
-## my choice of extra service
