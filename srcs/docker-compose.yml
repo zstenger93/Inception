@@ -1,72 +1,72 @@
 version: '3'
 
-	# Services and their settings we are going to use
-	# Alaways restart if there is a problem
-	services:
-	nginx:
-		container_name: nginx
-		build:
-		context: ./
-		dockerfile: requirements/nginx/Dockerfile
-		ports:
-		- 443:443
-		volumes:
-		- wordpress_data:/var/www/html
-		restart: unless-stopped
-		networks:
-		- network
+# Services and their settings we are going to use
+# Alaways restart if there is a problem
+services:
+    nginx:
+        container_name: nginx
+        build:
+        context: ./
+        dockerfile: requirements/nginx/Dockerfile
+        ports:
+        - 443:443
+        volumes:
+        - wordpress_data:/var/www/html
+        restart: unless-stopped
+        networks:
+        - inception
 
-	mariadb:
-		container_name: mariadb
-		build:
-		context: ./
-		dockerfile: requirements/mariadb/Dockerfile
-		args:
-			DB_NAME: ${DB_NAME}
-			DB_USER: ${DB_USER}
-			DB_PASS: ${DB_PASS}
-			DB_ROOT: ${DB_ROOT}
-		volumes:
-		- mariadb_data:/var/lib/mysql
-		networks:
-		- network
-		restart: unless-stopped
-		env_file:
-		- .env
+    mariadb:
+        container_name: mariadb
+        build:
+        context: ./
+        dockerfile: requirements/mariadb/Dockerfile
+        args:
+            DATABASE_NAME: ${DB_NAME}
+            DATABASE_USER: ${DB_USER}
+            DATABASE_PASS: ${DB_PASS}
+            DATABASE_ROOT: ${DB_ROOT}
+        volumes:
+        - mariadb_data:/var/lib/mysql
+        networks:
+        - inception
+        restart: unless-stopped
+        env_file:
+        - .env
 
-	# Has a dependency of database
-	wordpress:
-		container_name: wordpress
-		depends_on:
-		- mariadb
-		build:
-		context: ./
-		dockerfile: requirements/wordpress/Dockerfile
-		args:
-			DB_NAME: ${DB_NAME} # build time arguments are making dockerfiles
-			DB_USER: ${DB_USER} # more dunamic and flexible
-			DB_PASS: ${DB_PASS}
-		restart: unless-stopped
-		env_file:
-		- .env
-		networks:
-		- network
+    # Has a dependency of database
+    wordpress:
+        container_name: wordpress
+        depends_on:
+        - mariadb
+        build:
+        context: ./
+        dockerfile: requirements/wordpress/Dockerfile
+        args:
+            WP_ADMIN_NAME: ${WP_ADMIN} # build time arguments are making dockerfiles
+            DB_ADMIN_PW: ${WP_ADMIN_PW} # more dunamic and flexible
+            DB_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+        restart: unless-stopped
+        env_file:
+        - .env
+        networks:
+        - inception
 
-	# Volume locations and settings
-	volumes:
-	mariadb_data:
-		driver: local
-		driver_opts:
-		type: 'none'
-		o: 'bind'
-		device: /home/zstenger/data/mariadb
-	wordpress_data:
-		driver: local
-		driver_opts:
-		type: 'none'
-		o: 'bind'
-		device: /home/zstenger/data/mariadb
+# Volume locations and settings
+volumes:
+    mariadb_data:
+        driver: local
+        driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: /home/zstenger/data/mariadb
+    wordpress_data:
+        driver: local
+        driver_opts:
+        type: 'none'
+        o: 'bind'
+        device: /home/zstenger/data/mariadb
 
-	networks:
-	network:
-		driver: bridge
+networks:
+    inception:
+        driver: bridge
