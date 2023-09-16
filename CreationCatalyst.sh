@@ -28,6 +28,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 				mkdir ~/data/mariadb
 				mkdir ~/data/wordpress
 		fi
+	fi
 
 	echo -e "\033[1;32mDone\033[0;39m"
 	echo "Creating docker-compose ..."
@@ -48,7 +49,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 		- 443:443
 		volumes:
 		- wordpress_data:/var/www/html
-		restart: always
+		restart: unless-stopped
 		networks:
 		- network
 
@@ -66,7 +67,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 		- mariadb_data:/var/lib/mysql
 		networks:
 		- network
-		restart: always
+		restart: unless-stopped
 		env_file:
 		- .env
 
@@ -82,7 +83,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 			DB_NAME: \${DB_NAME} # build time arguments are making dockerfiles
 			DB_USER: \${DB_USER} # more dunamic and flexible
 			DB_PASS: \${DB_PASS}
-		restart: always
+		restart: unless-stopped
 		env_file:
 		- .env
 		networks:
@@ -345,5 +346,5 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	sleep 1
 	echo -e "\033[1;33mCreation has been finished, ready to go in sleep\033[0;39m"
 else
-    echo -e "\033[1;32mYou have made the right choice, padavan.\033[0;39m]"
+    echo -e "\033[1;32mYou have made the right choice, padavan.\033[0;39m"
 fi

@@ -12,7 +12,7 @@ version: '3'
 		- 443:443
 		volumes:
 		- wordpress_data:/var/www/html
-		restart: always
+		restart: unless-stopped
 		networks:
 		- network
 
@@ -30,7 +30,7 @@ version: '3'
 		- mariadb_data:/var/lib/mysql
 		networks:
 		- network
-		restart: always
+		restart: unless-stopped
 		env_file:
 		- .env
 
@@ -46,7 +46,7 @@ version: '3'
 			DB_NAME: ${DB_NAME} # build time arguments are making dockerfiles
 			DB_USER: ${DB_USER} # more dunamic and flexible
 			DB_PASS: ${DB_PASS}
-		restart: always
+		restart: unless-stopped
 		env_file:
 		- .env
 		networks:

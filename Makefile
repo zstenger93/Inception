@@ -1,10 +1,5 @@
 DOCKER-COMPOSE_FILE = docker-compose -f ./srcs/docker-compose.yml
 
-ENV_FILE = srcs/.env
-
-include $(ENV_FILE)
-export
-
 # make makefile great again
 
 creationcatalyst:
