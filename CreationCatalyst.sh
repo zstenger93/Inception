@@ -1,11 +1,11 @@
 echo "Creating folders ..."
-mkdir -p src/requirements/mariadb/conf \
-	src/requirements/mariadb/tools \
-	src/requirements/nginx/conf \
-	src/requirements/nginx/tools \
-	src/requirements/tools \
-	src/requirements/wordpress/conf \
-	src/requirements/wordpress/tools
+mkdir -p srcs/requirements/mariadb/conf \
+	srcs/requirements/mariadb/tools \
+	srcs/requirements/nginx/conf \
+	srcs/requirements/nginx/tools \
+	srcs/requirements/tools \
+	srcs/requirements/wordpress/conf \
+	srcs/requirements/wordpress/tools
 
 if [ ! -d "/home/${USER}/data" ]; then
 		mkdir ~/data
@@ -90,7 +90,7 @@ networks:
   network:
     driver: bridge"
 
-echo "$DOCKERCOMPOSE" > src/docker-compose.yml
+echo "$DOCKERCOMPOSE" > srcs/docker-compose.yml
 
 echo "\033[1;32mDone\033[0;39m"
 echo "Creating Dockerfile for mariadb ..."
@@ -115,7 +115,7 @@ HEALTHCHECK --interval=10s --timeout=3s CMD mysql -e \"SELECT 1\" || exit 1
 ENTRYPOINT [\"docker-entrypoint.sh\"]
 CMD [\"mysqld\"]"
 
-echo "$MARIADB_DOCKERFILE" > src/requirements/mariadb/Dockerfile
+echo "$MARIADB_DOCKERFILE" > srcs/requirements/mariadb/Dockerfile
 
 MARIADB_CONF=""
 
@@ -144,7 +144,7 @@ RUN sed -i \"s/\$NGINX_DOMAIN/\$NGINX_DOMAIN/g\" /etc/nginx/conf.d/*
 
 CMD [\"nginx\", \"-g\", \"daemon off;\"]"
 
-echo "$NGINX_DOCKERFILE" > src/requirements/nginx/Dockerfile
+echo "$NGINX_DOCKERFILE" > srcs/requirements/nginx/Dockerfile
 
 echo "\033[1;32mDone\033[0;39m"
 echo "Creating config file for nginx ..."
@@ -177,7 +177,7 @@ NGINX_CONF="server {
 	}
 }"
 
-echo "$NGINX_CONF" > src/requirements/nginx/conf/nginx.conf
+echo "$NGINX_CONF" > srcs/requirements/nginx/conf/nginx.conf
 
 echo "\033[1;32mDone\033[0;39m"
 echo "Creating Dockerfile for wordpress ..."
@@ -207,7 +207,7 @@ ENTRYPOINT [\"/usr/local/bin/create_wordpress.sh\"]
 # Ignore daemon and launch in the foreground
 CMD [\"/usr/sbin/php-fpm7.3\", \"-F\"]"
 
-echo "$WORDPRESS_DOCKERFILE" > src/requirements/wordpress/Dockerfile
+echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
 
 echo "\033[1;32mDone\033[0;39m"
 echo "Creating the environment ..."

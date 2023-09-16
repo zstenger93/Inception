@@ -1,20 +1,18 @@
-FROM debian:bullseye
+FROM debian:buster
 
-# Installing requirements
-RUN apt-get update && apt-get install -y \
-	mariadb-server \
-	mariadb-client && \
-	mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
+RUN apt-get update && apt-get upgrade -y && apt-get install mariadb-server mariadb-client procps -y
+
+RUN sed -ie 's/bind-address            = 127.0.0.1/bind-address = 0.0.0.0/g' /etc/mysql/mariadb.conf.d/50-server.cnf
+
+RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
+
+COPY ./docker-entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 3306
 
-ENV MYSQL_SOCKET=/var/run/mysqld/mysqld.sock
+#USER mysql
+HEALTHCHECK --interval=10s --timeout=3s CMD mysql -e "SELECT 1" || exit 1
 
-COPY requirements/mariadb/conf/mariadb.sh /mariadb.sh
-
-RUN chmod +x mariadb.sh && bash mariadb.sh
-
-ENTRYPOINT [ "/usr/local/bin/mariadb.sh" ]
-
-# Launch and enable the listening globally for the database
-CMD ["mysqld", "--bind-address=0.0.0.0"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["mysqld"]
