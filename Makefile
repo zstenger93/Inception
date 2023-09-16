@@ -38,4 +38,4 @@ clean:
 	docker volume rm $$(docker volume ls -q);\
 	docker network rm $$(docker network ls -q);\
 
-.PHONY: build run down re clean
+.PHONY: build run down re clean creationcatalyst

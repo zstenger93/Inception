@@ -9,6 +9,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
     echo "Continuing with the script..."
 	sleep 1
 	echo "Creating folders ..."
+	# creating the requested project folder structure by the subject in the pdf
 	mkdir -p srcs/requirements/mariadb/conf \
 		srcs/requirements/mariadb/tools \
 		srcs/requirements/nginx/conf \
@@ -20,6 +21,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 
 	system=$(uname -s)
 	if [ "$system" != "Darwin" ]; then
+		# creates some basic folders if they doesn't exist
 		if [ ! -d "/home/${USER}/data" ]; then
 				mkdir ~/data
 				mkdir ~/data/mariadb
@@ -335,6 +337,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 	echo -e "\033[1;32mDone\033[0;39m"
 	sleep 1
 	echo "Requesting input for the .env file:"
+	# run the template script and get the attributes for the .env file
 	bash template.sh
 	sleep 1
 	echo -e "\033[1;32mDone\033[0;39m"
