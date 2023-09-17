@@ -40,7 +40,7 @@ services:
         env_file:
             - .env
         ports:
-            - 443:443
+            - '443:443'
         volumes:
             - wordpress_data:/var/www/html
         restart: unless-stopped
