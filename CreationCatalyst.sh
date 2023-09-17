@@ -37,42 +37,44 @@ services:
     nginx:
         container_name: nginx
         build: ./requirements/nginx
-        env_file:
-            - .env
+        env_file: .env
         ports:
             - '443:443'
         volumes:
             - wordpress_data:/var/www/html
-        restart: unless-stopped
         networks:
             - inception
         depends_on:
             - wordpress
+        restart: unless-stopped
 
     mariadb:
         container_name: mariadb
         build: ./requirements/mariadb
         env_file:
             - .env
-        volumes:
-            - mariadb_data:/var/www/html
         networks:
             - inception
+        volumes:
+            - mariadb_data:/var/www/html
         restart: unless-stopped
 
     # Has a dependency of database obviously
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
-        env_file:
-            - .env
+        env_file: .env
         depends_on:
             - mariadb
         volumes:
             - wordpress_data:/var/www/html
-        restart: unless-stopped
         networks:
             - inception
+        restart: unless-stopped
+
+networks:
+    inception:
+        driver: bridge
 
 # Volume locations and settings
 volumes:
@@ -87,11 +89,8 @@ volumes:
         driver_opts:
             type: 'none'
             o: 'bind'
-            device: \"/home/zstenger/wordpress_data\"
+            device: \"/home/zstenger/wordpress_data\""
 
-networks:
-    inception:
-        driver: bridge"
 
     echo "$DOCKERCOMPOSE" > srcs/docker-compose.yml
 
@@ -139,8 +138,8 @@ cat mariadb.conf > /usr/local/bin/my.cnf
 cat > database.sql <<EOF
 CREATE DATABASE IF NOT EXISTS \${DB_NAME};
 ALTER USER 'root'@'localhost' IDENTIFIED BY '\${DATABASE_ROOT}';
-CREATE USER IF NOT EXISTS '${DATABASE_USER}' IDENTIFIED BY '${DATABASE_USER_PASS}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DATABASE_USER}';
+CREATE USER IF NOT EXISTS '\${DATABASE_USER}' IDENTIFIED BY '\${DATABASE_USER_PASS}';
+GRANT ALL PRIVILEGES ON \${DB_NAME}.* TO '\${DATABASE_USER}';
 FLUSH PRIVILEGES;
 EOF
 
