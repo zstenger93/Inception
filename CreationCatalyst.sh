@@ -62,7 +62,7 @@ services:
 
     # Has a dependency of database obviously
     wordpress:
-		image: wordpress
+        image: wordpress
         container_name: wordpress
         build: ./requirements/wordpress
         env_file:
@@ -180,17 +180,17 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     index index.php index.html index.htm;
     
     location / {
-		try_files \$uri \$uri/ =404;
-		autoindex on;
-	}
+        try_files \$uri \$uri/ =404;
+        autoindex on;
+    }
 
-	location ~ \.php$ {
-		try_files \$uri =404;
-		fastcgi_pass wordpress:9000;
-		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-		include fastcgi_params;
-	}
+    location ~ \.php$ {
+        try_files \$uri =404;
+        fastcgi_pass wordpress:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        include fastcgi_params;
+    }
 }"
 
     echo "$NGINX_CONF" > srcs/requirements/nginx/conf/nginx.conf
