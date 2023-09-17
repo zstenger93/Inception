@@ -36,9 +36,9 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 services:
     nginx:
         container_name: nginx
+        build: ./requirements/nginx
         env_file:
             - .env
-        build: ./requirements/nginx
         ports:
             - 443:443
         volumes:
@@ -51,9 +51,9 @@ services:
 
     mariadb:
         container_name: mariadb
+        build: ./requirements/mariadb
         env_file:
             - .env
-        build: ./requirements/mariadb
         volumes:
             - mariadb_data:/var/www/html
         networks:
@@ -62,12 +62,13 @@ services:
 
     # Has a dependency of database obviously
     wordpress:
+		image: wordpress
         container_name: wordpress
+        build: ./requirements/wordpress
         env_file:
             - .env
         depends_on:
             - mariadb
-        build: ./requirements/wordpress
         volumes:
             - wordpress_data:/var/www/html
         restart: unless-stopped
@@ -235,6 +236,7 @@ WORKDIR /var/www/html
 EXPOSE 9000
 COPY conf/wordpress.conf /wordpress.conf
 COPY tools/wordpress_setup.sh /wordpress_setup.sh
+RUN chmod +x /wordpress_setup.sh
 ENTRYPOINT [\"/wordpress_setup.sh\"]"
 
     echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
@@ -244,8 +246,8 @@ ENTRYPOINT [\"/wordpress_setup.sh\"]"
     sleep 1
 
     WORDPRESS_CONFIG="[www]
-user = insane
-group = insane
+user = nobody
+group = nobody
 listen = 9000
 pm = dynamic
 pm.max_children = 5
