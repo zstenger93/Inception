@@ -107,13 +107,13 @@ networks:
     sleep 1
     # create the dockerfile for mariadb
     MARIADB_DOCKERFILE="FROM alpine:3.18
-RUN apk add mysql 
-RUN apk add mysql-client
+RUN apk add mysql mysql-client
 RUN mkdir -p /run/mysqld
 RUN mkdir -p /var/lib/mysql
+COPY tools/create_database.sh /create_database.sh
 RUN mariadb-install-db --user=root --datadir=/var/lib/mysql --skip-test-db
 EXPOSE 3306
-ENTRYPOINT [\"sh\", \"tools/create_database.sh\"]"
+ENTRYPOINT [\"sh\", \"create_database.sh\"]"
 
     echo "$MARIADB_DOCKERFILE" > srcs/requirements/mariadb/Dockerfile
 
@@ -159,9 +159,9 @@ exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/pr
     sleep 1
     # create the dockerfile for nginx
     NGINX_DOCKERFILE="FROM alpine:3.18
-RUN apk add nginx
-RUN apk add openssl
-ENTRYPOINT [\"sh\", \"tools/setup_nginx.sh\"]"
+RUN apk add nginx openssl
+COPY tools/setup_nginx.sh .
+ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
 
     echo "$NGINX_DOCKERFILE" > srcs/requirements/nginx/Dockerfile
 
@@ -237,6 +237,7 @@ RUN apk add --no-cache php \\
     --no-cache tar 
 WORKDIR /var/www/html
 EXPOSE 9000
+COPY tools/wordpress_setup.sh /wordpress_setup.sh
 ENTRYPOINT [\"tools/wordpress_setup.sh\"]"
 
     echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
