@@ -62,7 +62,6 @@ services:
 
     # Has a dependency of database obviously
     wordpress:
-        image: wordpress
         container_name: wordpress
         build: ./requirements/wordpress
         env_file:
