@@ -38,9 +38,7 @@ services:
         container_name: nginx
         env_file:
             - .env
-        build:
-            context: ./
-            dockerfile: requirements/nginx/Dockerfile
+        build: ./requirements/nginx
         ports:
             - 443:443
         volumes:
@@ -55,9 +53,7 @@ services:
         container_name: mariadb
         env_file:
             - .env
-        build:
-            context: ./
-            dockerfile: requirements/mariadb/Dockerfile
+        build: ./requirements/mariadb
         volumes:
             - mariadb_data:/var/www/html
         networks:
@@ -71,9 +67,7 @@ services:
             - .env
         depends_on:
             - mariadb
-        build:
-            context: ./
-            dockerfile: requirements/wordpress/Dockerfile
+        build: ./requirements/wordpress
         volumes:
             - wordpress_data:/var/www/html
         restart: unless-stopped
