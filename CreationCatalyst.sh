@@ -110,9 +110,11 @@ networks:
 RUN apk add mysql mysql-client
 RUN mkdir -p /run/mysqld
 RUN mkdir -p /var/lib/mysql
+COPY conf/mariadb.conf /mariadb.conf
+COPY tools/create_database.sh /create_database.sh
 RUN mariadb-install-db --user=root --datadir=/var/lib/mysql --skip-test-db
 EXPOSE 3306
-ENTRYPOINT [\"sh\", \"/home/zstenger/Inception/srcs/requirements/mariadb/tools/create_database.sh\"]"
+ENTRYPOINT [\"sh\", \"create_database.sh\"]"
 
     echo "$MARIADB_DOCKERFILE" > srcs/requirements/mariadb/Dockerfile
 
@@ -138,9 +140,9 @@ port = 3306"
 
     CREATE_DATABASE="#!/bin/sh
 
-cat srcs/requirements/mariadb/conf/mariadb.conf > /usr/local/bin/my.cnf
+cat mariadb.conf > /usr/local/bin/my.cnf
 
-cat > srcs/requirements/mariadb/database.sql <<EOF
+cat > database.sql <<EOF
 CREATE DATABASE IF NOT EXISTS \${DB_NAME};
 ALTER USER 'root'@'localhost' IDENTIFIED BY '\${DATABASE_ROOT}';
 CREATE USER IF NOT EXISTS '${DATABASE_USER}' IDENTIFIED BY '${DATABASE_USER_PASS}';
@@ -148,7 +150,7 @@ GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DATABASE_USER}';
 FLUSH PRIVILEGES;
 EOF
 
-exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/problem.sql"
+exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/database.sql"
 
     echo "$CREATE_DATABASE" > srcs/requirements/mariadb/tools/create_database.sh
 
@@ -159,7 +161,9 @@ exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/pr
     # create the dockerfile for nginx
     NGINX_DOCKERFILE="FROM alpine:3.18
 RUN apk add nginx openssl
-ENTRYPOINT [\"sh\", \"/home/zstenger/Inception/srcs/requirements/nginx/tools/setup_nginx.sh\"]"
+COPY conf/nginx.conf .
+COPY tools/setup_nginx.sh .
+ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
 
     echo "$NGINX_DOCKERFILE" > srcs/requirements/nginx/Dockerfile
 
@@ -202,7 +206,7 @@ ENTRYPOINT [\"sh\", \"/home/zstenger/Inception/srcs/requirements/nginx/tools/set
 
     SETUP_NGINX=" # create the config and generate key and certificate
 
-cat srcs/requirements/nginx/conf/nginx.conf > /etc/nginx/http.d/default.conf
+cat nginx.conf > /etc/nginx/http.d/default.conf
 openssl req -x509 -newkey rsa:4096 -keyout \${KEY_} -out \${CERT_} -sha256 -days 365 -nodes -subj \"/CN=\"\${DOMAIN_NAME}\"\"
 exec nginx -g \"daemon off;\""
 
@@ -235,7 +239,9 @@ RUN apk add --no-cache php \\
     --no-cache tar 
 WORKDIR /var/www/html
 EXPOSE 9000
-ENTRYPOINT [\"/home/zstenger/Inception/srcs/requirements/wordpress/tools/wordpress_setup.sh\"]"
+COPY conf/wordpress.conf /wordpress.conf
+COPY tools/wordpress_setup.sh /wordpress_setup.sh
+ENTRYPOINT [\"/wordpress_setup.sh\"]"
 
     echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
 
@@ -259,7 +265,7 @@ pm.max_spare_servers = 3"
     echo "Creating setup file for wordpress ..."
     sleep 1
 
-    WORDPRESS_SETUP="cat srcs/requirements/wordpress/conf/wordpress.conf > /etc/php81/php-fpm.d/www.conf
+    WORDPRESS_SETUP="cat wordpress.conf > /etc/php81/php-fpm.d/www.conf
 if [ ! -f /var/www/html/wp-config.php ]; then
     curl -LO https://wordpress.org/wordpress-5.7.2.tar.gz
     tar -xvzf wordpress-5.7.2.tar.gz
