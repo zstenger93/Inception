@@ -20,11 +20,9 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
         srcs/requirements/wordpress/tools
     touch srcs/requirements/tools/tool.sh
 
-    # create folders
-    if [ ! -d "/home/zstenger/mariadb_data" ]; then
-            mkdir ~/home/zstenger/mariadb_data
-            mkdir ~/home/zstenger/wordpress_data
-    fi
+    # how many folder do we need? yes
+    mkdir -p /home/zstenger/mariadb_data
+    mkdir -p /home/zstenger/wordpress_data
 
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating docker-compose ..."
@@ -61,7 +59,7 @@ services:
             context: ./
             dockerfile: requirements/mariadb/Dockerfile
         volumes:
-            - mariadb_data:/var/lib/mysql
+            - mariadb_data:/var/www/html
         networks:
             - inception
         restart: unless-stopped
@@ -89,13 +87,13 @@ volumes:
         driver_opts:
             type: 'none'
             o: 'bind'
-            device: /home/zstenger/data/mariadb
+            device: \"/home/zstenger/mariadb_data\"
     wordpress_data:
         driver: local
         driver_opts:
             type: 'none'
             o: 'bind'
-            device: /home/zstenger/data/mariadb
+            device: \"/home/zstenger/wordpress_data\"
 
 networks:
     inception:
