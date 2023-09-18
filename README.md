@@ -26,4 +26,4 @@ For the ssl certificate and key
 
 ## commands
 
-docker exec -t mariadb sh
+docker exec -it mariadb sh
