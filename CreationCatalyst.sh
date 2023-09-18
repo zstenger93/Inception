@@ -130,7 +130,17 @@ port = 3306"
 
     CREATE_DATABASE="#!/bin/sh
 
-cat mariadb.conf > /usr/local/bin/my.cnf
+# cat mariadb.conf > /usr/local/bin/my.cnf
+
+echo '
+[mysql]
+default-character-set=utf8
+[mysqld]
+datadir = /var/lib/mysql
+socket  = /var/run/mysqld/mysqld.sock
+bind-address = 0.0.0.0
+port = 3306
+' > /usr/local/bin/my.cnf
 
 cat > database.sql <<EOF
 CREATE DATABASE IF NOT EXISTS \${DB_NAME};
@@ -284,7 +294,20 @@ pm.max_spare_servers = 3"
     echo "Creating setup file for wordpress ..."
     sleep 1
 
-    WORDPRESS_SETUP="cat wordpress.conf > /etc/php81/php-fpm.d/www.conf
+    WORDPRESS_SETUP="# cat wordpress.conf > /etc/php81/php-fpm.d/www.conf
+
+echo '
+[www]
+user = nobody
+group = nobody
+listen = 9000
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+' > /etc/php81/php-fpm.d/www.conf
+
 if [ ! -f /var/www/html/wp-config.php ]; then
     curl -LO https://wordpress.org/wordpress-5.7.2.tar.gz
     tar -xvzf wordpress-5.7.2.tar.gz
