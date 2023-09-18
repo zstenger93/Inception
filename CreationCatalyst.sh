@@ -58,6 +58,7 @@ services:
         restart: always
 
     wordpress:
+        image: wordpress
         container_name: wordpress
         build: ./requirements/wordpress
         env_file: .env
@@ -204,7 +205,8 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     echo "Creating nginx setup file ..."
     sleep 1
 
-    SETUP_NGINX=" # create the config and generate key and certificate
+    SETUP_NGINX="#!/bin/sh
+# create the config and generate key and certificate
 
 # cat nginx.conf > /etc/nginx/http.d/default.conf
 echo '
@@ -294,7 +296,9 @@ pm.max_spare_servers = 3"
     echo "Creating setup file for wordpress ..."
     sleep 1
 
-    WORDPRESS_SETUP="# cat wordpress.conf > /etc/php81/php-fpm.d/www.conf
+    WORDPRESS_SETUP="#!/bin/sh
+
+# cat wordpress.conf > /etc/php81/php-fpm.d/www.conf
 
 echo '
 [www]
@@ -331,7 +335,8 @@ php-fpm81 -F"
 
     sleep 1
     # creating the template for the env file
-    ENV_TEMPLATE="
+    ENV_TEMPLATE="#!/bin/sh
+
     echo \"# mariadb\" > .env
     while true; do
         printf \"\033[1;31mEnter the database name:\033[0;39m \"
