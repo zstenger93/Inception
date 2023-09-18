@@ -20,6 +20,6 @@ echo "WP_NORMAL_PROBLEM=userproblem" >> $FOLDER_1/.env
 echo "WP_NORMAL_PROBLEM_PASS=okeypass" >> $FOLDER_1/.env
 echo "WP_NORMAL_PROBLEM_EMAIL=not@problem.com"  >> $FOLDER_1/.env
 echo "INCEPTION_PATH=$INCEPTION_PATH" >> $FOLDER_1/.env
-mkdir -p /home/kvebers/problem_files
-mkdir -p /home/kvebers/problem_db
+mkdir -p /home/zstenger/problem_files
+mkdir -p /home/zstenger/problem_db
 
