@@ -175,7 +175,7 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     # create the config file for nginx
     NGINX_CONF="server {
     listen 443 ssl;
-    server_name '\"\$DOMAIN_NAME\"';
+    server_name '\"\$WP_DOMAIN\"';
     
     
     ssl_certificate '\"\$CERT_\"';
@@ -212,7 +212,7 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
 echo '
 server {
     listen 443 ssl;
-    server_name '\"\$DOMAIN_NAME\"';
+    server_name '\"\$WP_DOMAIN\"';
     
     
     ssl_certificate '\"\$CERT_\"';
@@ -237,7 +237,7 @@ server {
 }
 ' > /etc/nginx/http.d/default.conf
 
-openssl req -x509 -newkey rsa:4096 -keyout \${KEY_} -out \${CERT_} -sha256 -days 365 -nodes -subj \"/CN=\"\${DOMAIN_NAME}\"\"
+openssl req -x509 -newkey rsa:4096 -keyout \${KEY_} -out \${CERT_} -sha256 -days 365 -nodes -subj \"/CN=\"\${WP_DOMAIN}\"\"
 exec nginx -g \"daemon off;\""
 
     echo "$SETUP_NGINX" > srcs/requirements/nginx/tools/setup_nginx.sh
