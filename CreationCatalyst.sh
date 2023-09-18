@@ -31,8 +31,6 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
     # create the docker-compose file
     DOCKERCOMPOSE="version: '3'
 
-# Services and their settings we are going to use
-# Restart if there is a problem unless stopped i guess?
 services:
     nginx:
         container_name: nginx
@@ -46,7 +44,7 @@ services:
             - inception
         depends_on:
             - wordpress
-        restart: unless-stopped
+        restart: always
 
     mariadb:
         container_name: mariadb
@@ -57,9 +55,8 @@ services:
             - inception
         volumes:
             - mariadb_data:/var/www/html
-        restart: unless-stopped
+        restart: always
 
-    # Has a dependency of database obviously
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
@@ -70,13 +67,12 @@ services:
             - wordpress_data:/var/www/html
         networks:
             - inception
-        restart: unless-stopped
+        restart: always
 
 networks:
     inception:
         driver: bridge
 
-# Volume locations and settings
 volumes:
     mariadb_data:
         driver: local
@@ -84,6 +80,7 @@ volumes:
             type: 'none'
             o: 'bind'
             device: \"/home/zstenger/mariadb_data\"
+
     wordpress_data:
         driver: local
         driver_opts:
@@ -199,7 +196,35 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
 
     SETUP_NGINX=" # create the config and generate key and certificate
 
-cat nginx.conf > /etc/nginx/http.d/default.conf
+# cat nginx.conf > /etc/nginx/http.d/default.conf
+echo '
+server {
+    listen 443 ssl;
+    server_name '\"\$DOMAIN_NAME\"';
+    
+    
+    ssl_certificate '\"\$CERT_\"';
+    ssl_certificate_key '\"\$KEY_\"';
+    ssl_protocols TLSv1.2 TLSv1.3;
+    
+    root /var/www/html;
+    index index.php index.html index.htm;
+    
+    location / {
+		try_files \$uri \$uri/ =404;
+		autoindex on;
+	}
+
+	location ~ \.php$ {
+		try_files \$uri =404;
+		fastcgi_pass wordpress:9000;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		include fastcgi_params;
+	}
+}
+' > /etc/nginx/http.d/default.conf
+
 openssl req -x509 -newkey rsa:4096 -keyout \${KEY_} -out \${CERT_} -sha256 -days 365 -nodes -subj \"/CN=\"\${DOMAIN_NAME}\"\"
 exec nginx -g \"daemon off;\""
 
