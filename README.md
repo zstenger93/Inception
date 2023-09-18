@@ -22,7 +22,7 @@ For the ssl certificate and key
 
 ## wordpress
 
-
+basic website, leaving a comment which should be present after restarting the whole vm
 
 ## commands
 ```
