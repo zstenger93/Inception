@@ -21,3 +21,9 @@ The database
 For the ssl certificate and key
 
 ## wordpress
+
+
+
+## commands
+
+docker exec -t mariadb sh
