@@ -270,7 +270,7 @@ EXPOSE 9000
 COPY conf/wordpress.conf /wordpress.conf
 COPY tools/wordpress_setup.sh /wordpress_setup.sh
 RUN chmod +x /wordpress_setup.sh
-ENTRYPOINT [\"/wordpress_setup.sh\"]"
+ENTRYPOINT [\"sh\", \"wordpress_setup.sh\"]"
 
     echo "$WORDPRESS_DOCKERFILE" > srcs/requirements/wordpress/Dockerfile
 
