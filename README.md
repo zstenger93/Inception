@@ -28,9 +28,12 @@ For the ssl certificate and key
 ```
 docker exec -it mariadb sh
 ```
+```
 docker stop  mariadb nginx wordpress
 ```
+```
 docker rm  mariadb nginx wordpress
+```
 ```
 docker rmi  srcs_mariadb srcs_nginx wordpress
 ```
