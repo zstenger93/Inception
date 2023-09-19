@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# this inScription will create all the folders, files needed by the project.
+
 # ask the user if wants to go insane with me
 printf "\033[1;31mDo you want to continue and create Inception which is famous for driving people Insane?\033[0;39m\033[1;32m(y/yes)\033[0;39m "
 read response
