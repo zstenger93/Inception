@@ -24,7 +24,8 @@ For the ssl certificate and key
 
 basic website, leaving a comment which should be present after restarting the whole vm
 
-## commands
+## handy commands
+
 ```
 docker exec -it mariadb sh
 ```
