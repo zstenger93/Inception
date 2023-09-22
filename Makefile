@@ -8,6 +8,7 @@ creationcatalyst:
 
 build:
 	@echo "docker-compose Inception"
+	cd srcs/
 	$(DOCKER-COMPOSE_FILE) build
 
 run:
