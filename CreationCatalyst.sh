@@ -118,7 +118,7 @@ ENTRYPOINT [\"sh\", \"create_database.sh\"]"
     echo -e "Creating config file for database ..."
     sleep 1
 
-    MARIADB_CONF="#[mysql]
+    MARIADB_CONF="[mysql]
 default-character-set=utf8
 [mysqld]
 datadir = /var/lib/mysql
