@@ -42,7 +42,7 @@ services:
     nginx:
         container_name: nginx
         build: ./requirements/nginx
-        env_file: .env
+        env_file: ../env
         ports:
             - '443:443'
         volumes:
@@ -57,7 +57,7 @@ services:
         container_name: mariadb
         build: ./requirements/mariadb
         env_file:
-            - .env
+            - ../env
         networks:
             - inception
         volumes:
@@ -67,7 +67,7 @@ services:
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
-        env_file: .env
+        env_file: ../env
         depends_on:
             - mariadb
         volumes:
