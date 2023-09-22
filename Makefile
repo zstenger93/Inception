@@ -3,7 +3,6 @@ DOCKER-COMPOSE_FILE = docker-compose -f ./srcs/docker-compose.yml
 # make makefile great again
 
 creationcatalyst:
-	chmod +x CreationCatalyst.sh
 	./CreationCatalyst.sh
 
 build:
