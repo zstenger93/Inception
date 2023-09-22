@@ -118,9 +118,7 @@ ENTRYPOINT [\"sh\", \"create_database.sh\"]"
     echo -e "Creating config file for database ..."
     sleep 1
 
-    MARIADB_CONF="#!/bin/sh
-
-[mysql]
+    MARIADB_CONF="#[mysql]
 default-character-set=utf8
 [mysqld]
 datadir = /var/lib/mysql
@@ -136,17 +134,15 @@ port = 3306"
 
     CREATE_DATABASE="#!/bin/sh
 
-echo \"\$(cat /home/zstenger/Inception/srcs/requirements/mariadb/conf/mariadb.conf)\" > /usr/local/bin/my.cnf
-
-# echo '
-# [mysql]
-# default-character-set=utf8
-# [mysqld]
-# datadir = /var/lib/mysql
-# socket  = /var/run/mysqld/mysqld.sock
-# bind-address = 0.0.0.0
-# port = 3306
-# ' > /usr/local/bin/my.cnf
+echo '
+[mysql]
+default-character-set=utf8
+[mysqld]
+datadir = /var/lib/mysql
+socket  = /var/run/mysqld/mysqld.sock
+bind-address = 0.0.0.0
+port = 3306
+' > /usr/local/bin/my.cnf
 
 cat > database.sql <<EOF
 CREATE DATABASE IF NOT EXISTS \${DB_NAME};
@@ -212,35 +208,33 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     SETUP_NGINX="#!/bin/sh
 # create the config and generate key and certificate
 
-echo \"\$(cat /home/zstenger/Inception/srcs/requirements/nginx/conf/nginx.conf)\" > /etc/nginx/http.d/default.conf
+echo '
+server {
+    listen 443 ssl;
+    server_name '\"\$WP_DOMAIN\"';
+    
+    
+    ssl_certificate '\"\$CERT_\"';
+    ssl_certificate_key '\"\$KEY_\"';
+    ssl_protocols TLSv1.2 TLSv1.3;
+    
+    root /var/www/html;
+    index index.php index.html index.htm;
+    
+    location / {
+		try_files \$uri \$uri/ =404;
+		autoindex on;
+	}
 
-# echo '
-# server {
-#     listen 443 ssl;
-#     server_name '\"\$WP_DOMAIN\"';
-    
-    
-#     ssl_certificate '\"\$CERT_\"';
-#     ssl_certificate_key '\"\$KEY_\"';
-#     ssl_protocols TLSv1.2 TLSv1.3;
-    
-#     root /var/www/html;
-#     index index.php index.html index.htm;
-    
-#     location / {
-# 		try_files \$uri \$uri/ =404;
-# 		autoindex on;
-# 	}
-
-# 	location ~ \.php$ {
-# 		try_files \$uri =404;
-# 		fastcgi_pass wordpress:9000;
-# 		fastcgi_index index.php;
-# 		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-# 		include fastcgi_params;
-# 	}
-# }
-# ' > /etc/nginx/http.d/default.conf
+	location ~ \.php$ {
+		try_files \$uri =404;
+		fastcgi_pass wordpress:9000;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+		include fastcgi_params;
+	}
+}
+' > /etc/nginx/http.d/default.conf
 
 openssl req -x509 -newkey rsa:4096 -keyout \${KEY_} -out \${CERT_} -sha256 -days 365 -nodes -subj \"/CN=\"\${WP_DOMAIN}\"\"
 exec nginx -g \"daemon off;\""
