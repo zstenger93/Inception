@@ -58,7 +58,6 @@ services:
         restart: always
 
     wordpress:
-        image: wordpress
         container_name: wordpress
         build: ./requirements/wordpress
         env_file: .env
@@ -162,7 +161,6 @@ exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/da
     # create the dockerfile for nginx
     NGINX_DOCKERFILE="FROM alpine:3.18
 RUN apk add nginx openssl
-COPY conf/nginx.conf .
 COPY tools/setup_nginx.sh .
 ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
 
@@ -187,7 +185,7 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     
     location / {
         try_files \$uri \$uri/ =404;
-        autoindex on;
+
     }
 
     location ~ \.php$ {
@@ -270,7 +268,6 @@ RUN apk add --no-cache php \\
     --no-cache tar 
 WORKDIR /var/www/html
 EXPOSE 9000
-COPY conf/wordpress.conf /wordpress.conf
 COPY tools/wordpress_setup.sh /wordpress_setup.sh
 RUN chmod +x /wordpress_setup.sh
 ENTRYPOINT [\"/wordpress_setup.sh\"]"
@@ -293,6 +290,9 @@ pm.max_spare_servers = 3"
 
     echo "$WORDPRESS_CONFIG" > srcs/requirements/wordpress/conf/wordpress.conf
 
+	HOSTS_CONFIG="zstenger.42.fr"
+	echo "$HOSTS_CONFIG" > srcs/requirements/wordpress/conf/hosts.conf
+
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating setup file for wordpress ..."
     sleep 1
@@ -300,6 +300,7 @@ pm.max_spare_servers = 3"
     WORDPRESS_SETUP="#!/bin/sh
 
 # cat wordpress.conf > /etc/php81/php-fpm.d/www.conf
+cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/hosts.conf >> /etc/hosts
 
 echo '
 [www]
@@ -312,6 +313,10 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 ' > /etc/php81/php-fpm.d/www.conf
+
+echo '
+zstenger.42.fr
+' >> /etc/hosts
 
 if [ ! -f /var/www/html/wp-config.php ]; then
     curl -LO https://wordpress.org/wordpress-5.7.2.tar.gz
