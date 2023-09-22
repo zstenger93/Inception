@@ -299,24 +299,22 @@ pm.max_spare_servers = 3"
 
     WORDPRESS_SETUP="#!/bin/sh
 
-echo \"\$(cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/wordpress.conf)\" > /etc/php81/php-fpm.d/www.conf
-echo \"\$(cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/hosts.conf)\" >> /etc/hosts
 
-# echo '
-# [www]
-# user = nobody
-# group = nobody
-# listen = 9000
-# pm = dynamic
-# pm.max_children = 5
-# pm.start_servers = 2
-# pm.min_spare_servers = 1
-# pm.max_spare_servers = 3
-# ' > /etc/php81/php-fpm.d/www.conf
+echo '
+[www]
+user = nobody
+group = nobody
+listen = 9000
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+' > /etc/php81/php-fpm.d/www.conf
 
-# echo '
-# zstenger.42.fr
-# ' >> /etc/hosts
+echo '
+zstenger.42.fr
+' >> /etc/hosts
 
 if [ ! -f /var/www/html/wp-config.php ]; then
     curl -LO https://wordpress.org/wordpress-5.7.2.tar.gz
