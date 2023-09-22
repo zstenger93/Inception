@@ -136,7 +136,7 @@ port = 3306"
 
     CREATE_DATABASE="#!/bin/sh
 
-cat /home/zstenger/Inception/srcs/requirements/mariadb/conf/mariadb.conf > /usr/local/bin/my.cnf
+echo \"\$(cat /home/zstenger/Inception/srcs/requirements/mariadb/conf/mariadb.conf)\" > /usr/local/bin/my.cnf
 
 # echo '
 # [mysql]
@@ -212,7 +212,7 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     SETUP_NGINX="#!/bin/sh
 # create the config and generate key and certificate
 
-cat /home/zstenger/Inception/srcs/requirements/nginx/conf/nginx.conf > /etc/nginx/http.d/default.conf
+echo \"\$(cat /home/zstenger/Inception/srcs/requirements/nginx/conf/nginx.conf)\" > /etc/nginx/http.d/default.conf
 
 # echo '
 # server {
@@ -305,8 +305,8 @@ pm.max_spare_servers = 3"
 
     WORDPRESS_SETUP="#!/bin/sh
 
-cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/wordpress.conf > /etc/php81/php-fpm.d/www.conf
-cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/hosts.conf >> /etc/hosts
+echo \"\$(cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/wordpress.conf)\" > /etc/php81/php-fpm.d/www.conf
+echo \"\$(cat /home/zstenger/Inception/srcs/requirements/wordpress/conf/hosts.conf)\" >> /etc/hosts
 
 # echo '
 # [www]
