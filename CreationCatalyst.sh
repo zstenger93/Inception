@@ -19,8 +19,13 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
         srcs/requirements/nginx/tools \
         srcs/requirements/tools \
         srcs/requirements/wordpress/conf \
-        srcs/requirements/wordpress/tools
+        srcs/requirements/wordpress/tools \
+		/etc/php81/php-fpm.d \
+		/etc/nginx/http.d \
     touch srcs/requirements/tools/tool.sh
+    touch /etc/php81/php-fpm.d/www.conf
+	touch /etc/nginx/http.d/default.conf
+	touch /usr/local/bin/my.cnf
 
     # how many folder do we need? yes
     mkdir -p /home/zstenger/mariadb_data
