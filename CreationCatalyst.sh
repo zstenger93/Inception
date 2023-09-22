@@ -21,7 +21,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
         srcs/requirements/wordpress/conf \
         srcs/requirements/wordpress/tools \
 		/etc/php81/php-fpm.d \
-		/etc/nginx/http.d \
+		/etc/nginx/http.d
     touch srcs/requirements/tools/tool.sh
     touch /etc/php81/php-fpm.d/www.conf
 	touch /etc/nginx/http.d/default.conf
@@ -145,10 +145,10 @@ port = 3306
 ' > /usr/local/bin/my.cnf
 
 cat > database.sql <<EOF
-CREATE DATABASE IF NOT EXISTS \${DB_NAME};
+CREATE DATABASE IF NOT EXISTS \${DATABASE_NAME};
 ALTER USER 'root'@'localhost' IDENTIFIED BY '\${DATABASE_ROOT}';
 CREATE USER IF NOT EXISTS '\${DATABASE_USER}' IDENTIFIED BY '\${DATABASE_USER_PASS}';
-GRANT ALL PRIVILEGES ON \${DB_NAME}.* TO '\${DATABASE_USER}';
+GRANT ALL PRIVILEGES ON \${DATABASE_NAME}.* TO '\${DATABASE_USER}';
 FLUSH PRIVILEGES;
 EOF
 
