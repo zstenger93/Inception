@@ -2,6 +2,8 @@
 
 # this inScription will create all the folders, files needed by the project.
 
+
+
 # ask the user if wants to go insane with me
 printf "\033[1;31mDo you want to continue and create Inception which is famous for driving people Insane?\033[0;39m\033[1;32m(y/yes)\033[0;39m "
 read response
@@ -117,7 +119,7 @@ ENTRYPOINT [\"sh\", \"create_database.sh\"]"
     echo -e "\033[1;32mDone\033[0;39m"
     echo -e "Creating config file for database ..."
     sleep 1
-
+	# creating mariadb config
     MARIADB_CONF="[mysql]
 default-character-set=utf8
 [mysqld]
@@ -131,7 +133,7 @@ port = 3306"
     echo -e "\033[1;32mDone\033[0;39m"
     echo -e "Creating setup file for database ..."
     sleep 1
-
+	# script to create the database
     CREATE_DATABASE="#!/bin/sh
 
 echo '
@@ -204,7 +206,7 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating nginx setup file ..."
     sleep 1
-
+	# script file to setup nginx
     SETUP_NGINX="#!/bin/sh
 # create the config and generate key and certificate
 
@@ -277,7 +279,7 @@ ENTRYPOINT [\"/wordpress_setup.sh\"]"
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating config file for wordpress ..."
     sleep 1
-
+	# wordpress cofnig file
     WORDPRESS_CONFIG="[www]
 user = nobody
 group = nobody
@@ -296,7 +298,7 @@ pm.max_spare_servers = 3"
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating setup file for wordpress ..."
     sleep 1
-
+	# wordpress setup script
     WORDPRESS_SETUP="#!/bin/sh
 
 
