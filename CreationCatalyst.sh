@@ -4,9 +4,10 @@
 
 # creating aliases to make hell less hell
 echo "Creating aliases ..."
-echo "alias up='docker-compose build'" >> ~/.bashrc
+echo "alias rmd='docker stop \$(docker ps -qa); docker rm \$(docker ps -qa); docker rmi -f \$(docker images -qa); docker volume rm \$(docker volume ls -q); docker network rm \$(docker network ls -q)'" >> ~/.bashrc
+echo "alias build='docker-compose build'" >> ~/.bashrc
 echo "alias up='docker-compose up -d'" >> ~/.bashrc
-echo "alias up='docker-compose down'" >> ~/.bashrc
+echo "alias down='docker-compose down'" >> ~/.bashrc
 echo "alias a='vi ~/.bashrc'" >> ~/.bashrc
 
 sleep 1
