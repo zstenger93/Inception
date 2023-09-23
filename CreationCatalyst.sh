@@ -4,11 +4,17 @@
 
 # creating aliases to make hell less hell
 echo "Creating aliases ..."
+# docker commands for the speed of life
 echo "alias rmd='docker stop \$(docker ps -qa); docker rm \$(docker ps -qa); docker rmi -f \$(docker images -qa); docker volume rm \$(docker volume ls -q); docker network rm \$(docker network ls -q)'" >> ~/.bashrc
 echo "alias build='docker-compose build'" >> ~/.bashrc
 echo "alias up='docker-compose up -d'" >> ~/.bashrc
 echo "alias down='docker-compose down'" >> ~/.bashrc
+#open bashrc
 echo "alias a='vi ~/.bashrc'" >> ~/.bashrc
+# accessing containers
+echo "alias mar='docker exec -it mariadb sh'" >> ~/.bashrc
+echo "alias ngi='docker exec -it nginx sh'" >> ~/.bashrc
+echo "alias wor='docker exec -it wordpress sh'" >> ~/.bashrc
 
 sleep 1
 echo -e "\033[1;32mDone\033[0;39m"
