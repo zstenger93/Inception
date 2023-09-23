@@ -2,7 +2,18 @@
 
 # this inScription will create all the folders, files needed by the project.
 
+# creating aliases to make hell less hell
+echo "Creating aliases ..."
+echo "alias up='docker-compose build'" >> ~/.bashrc
+echo "alias up='docker-compose up -d'" >> ~/.bashrc
+echo "alias up='docker-compose down'" >> ~/.bashrc
+echo "alias a='vi ~/.bashrc'" >> ~/.bashrc
 
+sleep 1
+echo -e "\033[1;32mDone\033[0;39m"
+
+# apply the changes to the current terminal
+source ~/.bashrc
 
 # ask the user if wants to go insane with me
 printf "\033[1;31mDo you want to continue and create Inception which is famous for driving people Insane?\033[0;39m\033[1;32m(y/yes)\033[0;39m "
