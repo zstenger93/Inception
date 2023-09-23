@@ -15,7 +15,10 @@ echo "alias a='vi ~/.bashrc'" >> ~/.bashrc
 echo "alias mar='docker exec -it mariadb sh'" >> ~/.bashrc
 echo "alias ngi='docker exec -it nginx sh'" >> ~/.bashrc
 echo "alias wor='docker exec -it wordpress sh'" >> ~/.bashrc
+# other aliases
 echo "alias .='cd ..'" >> ~/.bashrc
+echo "alias gh='open https://github.com/zstenger93/Inception'" >> ~/.bashrc
+echo "alias wp='open https://zstenger.42.fr'" >> ~/.bashrc
 
 sleep 1
 echo -e "\033[1;32mDone\033[0;39m"
