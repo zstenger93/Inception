@@ -61,7 +61,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 
 services:
     nginx:
-        image: nginx_
+        image: nginx1
         container_name: nginx
         build: ./requirements/nginx
         env_file: .env
@@ -76,7 +76,7 @@ services:
         restart: unless-stopped
 
     mariadb:
-        image: mariadb_
+        image: mariadb1
         container_name: mariadb
         build: ./requirements/mariadb
         env_file:
@@ -88,7 +88,7 @@ services:
         restart: unless-stopped
 
     wordpress:
-        image: wordpress_
+        image: wordpress1
         container_name: wordpress
         build: ./requirements/wordpress
         env_file: .env
