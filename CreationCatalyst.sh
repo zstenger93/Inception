@@ -69,7 +69,7 @@ services:
             - inception
         depends_on:
             - wordpress
-        restart: always
+        restart: unless-stopped
 
     mariadb:
         container_name: mariadb
@@ -80,7 +80,7 @@ services:
             - inception
         volumes:
             - mariadb_data:/var/www/html
-        restart: always
+        restart: unless-stopped
 
     wordpress:
         container_name: wordpress
@@ -92,7 +92,7 @@ services:
             - wordpress_data:/var/www/html
         networks:
             - inception
-        restart: always
+        restart: unless-stopped
 
 networks:
     inception:
