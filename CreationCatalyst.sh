@@ -61,7 +61,7 @@ if [[ "$response" == "y" || "$response" == "yes" ]]; then
 
 services:
     nginx:
-		image: nginx_
+        image: nginx_
         container_name: nginx
         build: ./requirements/nginx
         env_file: .env
@@ -76,7 +76,7 @@ services:
         restart: unless-stopped
 
     mariadb:
-		image: mariadb_
+        image: mariadb_
         container_name: mariadb
         build: ./requirements/mariadb
         env_file:
@@ -88,7 +88,7 @@ services:
         restart: unless-stopped
 
     wordpress:
-		image: wordpress_
+        image: wordpress_
         container_name: wordpress
         build: ./requirements/wordpress
         env_file: .env
@@ -141,7 +141,7 @@ ENTRYPOINT [\"sh\", \"create_database.sh\"]"
     echo -e "\033[1;32mDone\033[0;39m"
     echo -e "Creating config file for database ..."
     sleep 1
-	# creating mariadb config
+    # creating mariadb config
     MARIADB_CONF="[mysql]
 default-character-set=utf8
 [mysqld]
@@ -155,7 +155,7 @@ port = 3306"
     echo -e "\033[1;32mDone\033[0;39m"
     echo -e "Creating setup file for database ..."
     sleep 1
-	# script to create the database
+    # script to create the database
     CREATE_DATABASE="#!/bin/sh
 
 echo '
@@ -228,7 +228,7 @@ ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating nginx setup file ..."
     sleep 1
-	# script file to setup nginx
+    # script file to setup nginx
     SETUP_NGINX="#!/bin/sh
 # create the config and generate key and certificate
 
@@ -246,17 +246,17 @@ server {
     index index.php index.html index.htm;
     
     location / {
-		try_files \$uri \$uri/ =404;
-		autoindex on;
-	}
+        try_files \$uri \$uri/ =404;
+        autoindex on;
+    }
 
-	location ~ \.php$ {
-		try_files \$uri =404;
-		fastcgi_pass wordpress:9000;
-		fastcgi_index index.php;
-		fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-		include fastcgi_params;
-	}
+    location ~ \.php$ {
+        try_files \$uri =404;
+        fastcgi_pass wordpress:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        include fastcgi_params;
+    }
 }
 ' > /etc/nginx/http.d/default.conf
 
@@ -301,7 +301,7 @@ ENTRYPOINT [\"/wordpress_setup.sh\"]"
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating config file for wordpress ..."
     sleep 1
-	# wordpress cofnig file
+    # wordpress cofnig file
     WORDPRESS_CONFIG="[www]
 user = nobody
 group = nobody
@@ -313,14 +313,14 @@ pm.min_spare_servers = 1
 pm.max_spare_servers = 3"
 
     echo "$WORDPRESS_CONFIG" > srcs/requirements/wordpress/conf/wordpress.conf
-	# /etc/hosts addition to e able to access the site
-	HOSTS_CONFIG="zstenger.42.fr"
-	echo "$HOSTS_CONFIG" > srcs/requirements/wordpress/conf/hosts.conf
+    # /etc/hosts addition to e able to access the site
+    HOSTS_CONFIG="zstenger.42.fr"
+    echo "$HOSTS_CONFIG" > srcs/requirements/wordpress/conf/hosts.conf
 
     echo -e "\033[1;32mDone\033[0;39m"
     echo "Creating setup file for wordpress ..."
     sleep 1
-	# wordpress setup script
+    # wordpress setup script
     WORDPRESS_SETUP="#!/bin/sh
 
 
@@ -504,7 +504,7 @@ php-fpm81 -F"
     sleep 1
     echo -e "\033[1;32mDone\033[0;39m"
     sleep 1
-	# moving it to the srcs folder
+    # moving it to the srcs folder
     mv .env srcs/
     echo -e "\033[1;33mCreation has been finished, ready to go in sleep\033[0;39m"
 else
