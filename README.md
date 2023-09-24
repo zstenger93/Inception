@@ -38,3 +38,15 @@ docker rm  mariadb nginx wordpress
 ```
 docker rmi  srcs_mariadb srcs_nginx wordpress
 ```
+
+```
+SELECT DATABASES;
+```
+
+```
+use <dbname>
+```
+
+```
+show tables;
+```

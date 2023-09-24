@@ -9,6 +9,8 @@ echo "alias rmd='docker stop \$(docker ps -qa); docker rm \$(docker ps -qa); doc
 echo "alias build='docker-compose build'" >> ~/.bashrc
 echo "alias up='docker-compose up -d'" >> ~/.bashrc
 echo "alias down='docker-compose down'" >> ~/.bashrc
+echo "alias connect='docker exec -it mariadb mysql -u dbuser -p'" >> ~/.bashrc
+echo "alias rootdb='docker exec -it mariadb mysql -u root -p'" >> ~/.bashrc
 #open bashrc
 echo "alias a='vi ~/.bashrc'" >> ~/.bashrc
 # accessing containers
