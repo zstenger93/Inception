@@ -307,7 +307,7 @@ pm.min_spare_servers = 1
 pm.max_spare_servers = 3"
 
     echo "$WORDPRESS_CONFIG" > srcs/requirements/wordpress/conf/wordpress.conf
-
+	# /etc/hosts addition to e able to access the site
 	HOSTS_CONFIG="zstenger.42.fr"
 	echo "$HOSTS_CONFIG" > srcs/requirements/wordpress/conf/hosts.conf
 
@@ -356,7 +356,7 @@ php-fpm81 -F"
     echo "Creating the environment ..."
 
     sleep 1
-    # creating the template for the env file
+    # creating the template for the env file with the necessary attributes
     ENV_TEMPLATE="#!/bin/sh
 
     echo \"# mariadb\" > .env
@@ -498,6 +498,7 @@ php-fpm81 -F"
     sleep 1
     echo -e "\033[1;32mDone\033[0;39m"
     sleep 1
+	# moving it to the srcs folder
     mv .env srcs/
     echo -e "\033[1;33mCreation has been finished, ready to go in sleep\033[0;39m"
 else
