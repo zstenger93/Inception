@@ -131,6 +131,7 @@ volumes:
 RUN apk add mysql mysql-client
 RUN mkdir -p /run/mysqld
 RUN mkdir -p /var/lib/mysql
+COPY conf/my.cnf /usr/local/bin/my.cnf
 COPY tools/create_database.sh /create_database.sh
 RUN mariadb-install-db --user=root --datadir=/var/lib/mysql --skip-test-db
 EXPOSE 3306
@@ -150,7 +151,7 @@ socket  = /var/run/mysqld/mysqld.sock
 bind-address = 0.0.0.0
 port = 3306"
 
-    echo "$MARIADB_CONF" > srcs/requirements/mariadb/conf/mariadb.conf
+    echo "$MARIADB_CONF" > srcs/requirements/mariadb/conf/my.cnf
 
     echo -e "\033[1;32mDone\033[0;39m"
     echo -e "Creating setup file for database ..."
@@ -187,6 +188,7 @@ exec mariadbd --no-defaults --user=root --datadir=/var/lib/mysql --init-file=/da
     # create the dockerfile for nginx
     NGINX_DOCKERFILE="FROM alpine:3.18
 RUN apk add nginx openssl
+COPY conf/nginx.conf /etc/nginx/http.d/default.conf
 COPY tools/setup_nginx.sh .
 ENTRYPOINT [\"sh\", \"setup_nginx.sh\"]"
 
@@ -292,6 +294,7 @@ RUN apk add --no-cache php \\
     --no-cache tar 
 WORKDIR /var/www/html
 EXPOSE 9000
+COPY conf/www.conf /etc/php81/php-fpm.d/www.conf
 COPY tools/wordpress_setup.sh /wordpress_setup.sh
 RUN chmod +x /wordpress_setup.sh
 ENTRYPOINT [\"/wordpress_setup.sh\"]"
@@ -312,7 +315,7 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3"
 
-    echo "$WORDPRESS_CONFIG" > srcs/requirements/wordpress/conf/wordpress.conf
+    echo "$WORDPRESS_CONFIG" > srcs/requirements/wordpress/conf/www.conf
     # /etc/hosts addition to e able to access the site
     HOSTS_CONFIG="zstenger.42.fr"
     echo "$HOSTS_CONFIG" > srcs/requirements/wordpress/conf/hosts.conf
