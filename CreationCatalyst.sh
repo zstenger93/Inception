@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# start working on bonus
 # this inScription will create all the folders, files needed by the project.
 
 # creating aliases to make hell less hell
